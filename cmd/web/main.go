@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	err := coven.Run()
+	err := coven.Init()
 	if err != nil {
-		fmt.Println(fmt.Errorf("failed to run conve web: %s", err.Error()))
+		fmt.Println(fmt.Errorf("failed to run conven web: %s", err.Error()))
 	}
 }

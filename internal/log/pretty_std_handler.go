@@ -8,12 +8,12 @@ import (
 	"github.com/fatih/color"
 )
 
-type PrettyStdLogHandler struct {
+type PrettyHandler struct {
 	Writer io.Writer
 	Level  slog.Level
 }
 
-func (h *PrettyStdLogHandler) Handle(ctx context.Context, r slog.Record) error {
+func (h *PrettyHandler) Handle(ctx context.Context, r slog.Record) error {
 	timestamp := r.Time.Format("15:04:05.00")
 	var levelColor *color.Color
 	var levelStr string
@@ -80,14 +80,14 @@ func (h *PrettyStdLogHandler) Handle(ctx context.Context, r slog.Record) error {
 	return err
 }
 
-func (h *PrettyStdLogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+func (h *PrettyHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return h
 }
 
-func (h *PrettyStdLogHandler) WithGroup(name string) slog.Handler {
+func (h *PrettyHandler) WithGroup(name string) slog.Handler {
 	return h
 }
 
-func (h *PrettyStdLogHandler) Enabled(ctx context.Context, level slog.Level) bool {
+func (h *PrettyHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return level >= h.Level
 }

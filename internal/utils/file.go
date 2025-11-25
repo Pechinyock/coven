@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,19 +8,48 @@ import (
 
 const pathGlobSymbols = "*?["
 
-func GetFullPath(path string) string {
+func CreatePath(path string) error {
+	path = filepath.Clean(path)
+
+	_, err := os.Stat(path)
+	if err == nil {
+		return nil
+	}
+
+	if filepath.Ext(path) != "" {
+		dir := filepath.Dir(path)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return err
+		}
+
+		file, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		file.Close()
+
+	} else {
+
+		if err := os.MkdirAll(path, 0755); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func GetFullPath(path string) (string, error) {
 	var fullFilePath string
 	if filepath.IsAbs(path) {
 		fullFilePath = path
 	} else {
 		full, err := filepath.Abs(path)
 		if err != nil {
-			slog.Error("an error ocured while trying to convert relative path into full path", "error message", err.Error())
-			panic("")
+			return "", err
 		}
 		fullFilePath = full
 	}
-	return fullFilePath
+	return fullFilePath, nil
 }
 
 func IsFileExists(path string) bool {
