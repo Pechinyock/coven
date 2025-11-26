@@ -1,13 +1,15 @@
 package main
 
 import (
-	coven "coven/internal/app"
+	"coven/internal/app"
+
 	"fmt"
 )
 
 func main() {
-	err := coven.Init()
+	config, err := app.Init()
 	if err != nil {
 		fmt.Println(fmt.Errorf("failed to run conven web: %s", err.Error()))
 	}
+	app.Run(config)
 }

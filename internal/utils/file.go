@@ -8,36 +8,6 @@ import (
 
 const pathGlobSymbols = "*?["
 
-func CreatePath(path string) error {
-	path = filepath.Clean(path)
-
-	_, err := os.Stat(path)
-	if err == nil {
-		return nil
-	}
-
-	if filepath.Ext(path) != "" {
-		dir := filepath.Dir(path)
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			return err
-		}
-
-		file, err := os.Create(path)
-		if err != nil {
-			return err
-		}
-		file.Close()
-
-	} else {
-
-		if err := os.MkdirAll(path, 0755); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func GetFullPath(path string) (string, error) {
 	var fullFilePath string
 	if filepath.IsAbs(path) {
@@ -82,9 +52,7 @@ func GetFileName(path string, withExt bool) string {
 }
 
 func IsFilePath(path string) bool {
-	cleanPath := filepath.Clean(path)
-
-	base := filepath.Base(cleanPath)
+	base := filepath.Base(path)
 	ext := filepath.Ext(base)
 
 	return ext != "" && base != ext

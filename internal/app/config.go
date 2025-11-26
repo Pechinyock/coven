@@ -16,7 +16,7 @@ func readConfig() (*config.CovenWebConfig, error) {
 	}
 	cfgPath := *configPath
 
-	fmt.Printf("reading configuration from file %s\n", cfgPath)
+	fmt.Printf("reading configuration from file '%s'\n", cfgPath)
 
 	data, err := os.ReadFile(cfgPath)
 	if err != nil {

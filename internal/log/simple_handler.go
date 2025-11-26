@@ -4,35 +4,27 @@ import (
 	"context"
 	"io"
 	"log/slog"
-
-	"github.com/fatih/color"
 )
 
-type PrettyHandler struct {
+type SimpleLogHandler struct {
 	Writer io.Writer
 	Level  slog.Level
 }
 
-func (h *PrettyHandler) Handle(ctx context.Context, r slog.Record) error {
+func (h *SimpleLogHandler) Handle(ctx context.Context, r slog.Record) error {
 	timestamp := r.Time.Format("15:04:05.00")
-	var levelColor *color.Color
 	var levelStr string
 
 	switch r.Level {
 	case slog.LevelDebug:
-		levelColor = color.New(color.FgHiBlack)
 		levelStr = "D"
 	case slog.LevelInfo:
-		levelColor = color.New(color.FgGreen)
 		levelStr = "I"
 	case slog.LevelWarn:
-		levelColor = color.New(color.FgYellow)
 		levelStr = "W"
 	case slog.LevelError:
-		levelColor = color.New(color.FgRed)
 		levelStr = "E"
 	default:
-		levelColor = color.New(color.FgCyan)
 		levelStr = r.Level.String()
 	}
 
@@ -41,7 +33,7 @@ func (h *PrettyHandler) Handle(ctx context.Context, r slog.Record) error {
 		return err
 	}
 
-	_, err = levelColor.Fprint(h.Writer, levelStr)
+	_, err = io.WriteString(h.Writer, levelStr)
 	if err != nil {
 		return err
 	}
@@ -80,14 +72,14 @@ func (h *PrettyHandler) Handle(ctx context.Context, r slog.Record) error {
 	return err
 }
 
-func (h *PrettyHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+func (h *SimpleLogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return h
 }
 
-func (h *PrettyHandler) WithGroup(name string) slog.Handler {
+func (h *SimpleLogHandler) WithGroup(name string) slog.Handler {
 	return h
 }
 
-func (h *PrettyHandler) Enabled(ctx context.Context, level slog.Level) bool {
+func (h *SimpleLogHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return level >= h.Level
 }

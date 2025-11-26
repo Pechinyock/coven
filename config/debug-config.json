@@ -10,15 +10,17 @@
         "certKeyFilePath": "C:/_dev/coven/localhost+3-key.pem"
     },
     "log": {
-        "logLevel": "info",
-        "logPath": "C:/_dev/coven/logs/debug.log"
+        "consoleLogger": {
+            "level": "debug"
+        },
+        "fileLogger": {
+            "level": "error",
+            "filePath": "C:/_dev/coven/logs"
+        }
     },
     "middlewares": {
         "requestLogger": {
-            "enabled": true,
-            "options": {
-                "logLevel": "debug"
-            }
+            "level": "debug"
         }
     },
     "webUI": {

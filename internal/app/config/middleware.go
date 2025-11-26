@@ -3,8 +3,7 @@ package config
 import "fmt"
 
 type RequestLoggerMiddlewareConfig struct {
-	Enabled bool       `json:"enabled"`
-	Log     *LogConfig `json:"options"`
+	Level string `json:"level"`
 }
 
 type MeddlewaresConfig struct {
