@@ -6,8 +6,8 @@
         "writeTimeoutSec": 30
     },
     "https": {
-        "certFilePath": "C:/_dev/coven/localhost+3.pem",
-        "certKeyFilePath": "C:/_dev/coven/localhost+3-key.pem"
+        "certFilePath": "C:/_dev/coven/cert/localhost+3.pem",
+        "certKeyFilePath": "C:/_dev/coven/cert/localhost+3-key.pem"
     },
     "log": {
         "consoleLogger": {

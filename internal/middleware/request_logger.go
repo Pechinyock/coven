@@ -27,7 +27,7 @@ func NewRequestLogger(logHandler slog.Handler) RequestLogger {
 	}
 }
 
-func (l RequestLogger) AddFunc(router *http.ServeMux) (http.HandlerFunc, error) {
+func (l RequestLogger) Add(router http.Handler) (http.Handler, error) {
 	result := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		rw := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}

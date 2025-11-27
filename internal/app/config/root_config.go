@@ -26,9 +26,9 @@ func (c *CovenWebConfig) Validate() error {
 	}
 	errs := []error{}
 	for _, cfg := range childs {
-		// if cfg == nil {
-		// 	continue
-		// }
+		if cfg == nil {
+			continue
+		}
 		err := cfg.Validate()
 		if err != nil {
 			errs = append(errs, err)
