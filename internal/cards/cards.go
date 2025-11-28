@@ -1,20 +1,14 @@
 package cards
 
-import (
-	"errors"
-	"log/slog"
-)
-
-/* [LAME] HARDCODE */
-const CardsDataOutputPath = "C:/_dev/cards_output"
-
-func GenerateCard(templName string, data any) error {
-	if templName == "" {
-		return errors.New("can't generate template with empty template name")
-	}
-
-	slog.Info("generating card", "template name", templName,
-		"output path", CardsDataOutputPath,
-	)
-	return nil
+var CardTypes = map[string]string{
+	"characters":  "Персонаж",
+	"spells":      "Заклинание",
+	"secrets":     "Секрет",
+	"curses":      "Проклятье",
+	"ingredients": "Ингредиент",
+	"potions":     "Зелье",
 }
+
+var CardsOutput string
+var ImagePool string
+var CardTemplates string

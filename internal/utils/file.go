@@ -57,3 +57,11 @@ func IsFilePath(path string) bool {
 
 	return ext != "" && base != ext
 }
+
+func IsExtension(fileName, ext string) bool {
+	return strings.EqualFold(fileName, ext)
+}
+
+func IsValidPath(s string) bool {
+	return s == filepath.Clean(s) && filepath.Base(s) == s
+}

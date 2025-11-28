@@ -26,8 +26,8 @@
     "webUI": {
         "rootPath": "C:/_dev/coven/UI/coven",
         "staticFilesShare": {
-            "routeName": "static",
-            "dirPath": "assets",
+            "routeName": "assets",
+            "dirPath": "static",
             "tokenSource": "none"
         },
         "templatePaths": [
@@ -38,22 +38,20 @@
         ]
     },
     "fileServer": {
-        "sharedDirs": [
-            {
-                "RouteName": "complete-cards",
-                "DirPath": "C:/_dev/cards_output",
-                "TokenSource": "none"
-            },
-            {
-                "RouteName": "card-templates",
-                "DirPath": "C:/_dev/card_templates",
-                "TokenSource": "none"
-            },
-            {
-                "RouteName": "image-pool",
-                "DirPath": "C:/_dev/card_image_pool",
-                "TokenSource": "none"
-            }
-        ]
+        "completeCardsDir": {
+            "routeName": "complete-cards",
+            "dirPath": "C:/_dev/cards_output",
+            "tokenSource": "none"
+        },
+        "cardTemplatesDir": {
+            "routeName": "card-templates",
+            "dirPath": "C:/_dev/card_templates",
+            "tokenSource": "none"
+        },
+        "imagePoolDir": {
+            "routeName": "image-pool",
+            "dirPath": "C:/_dev/card_image_pool",
+            "tokenSource": "none"
+        }
     }
 }

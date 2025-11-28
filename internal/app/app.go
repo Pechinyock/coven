@@ -43,6 +43,24 @@ func Run(conf *config.CovenWebConfig) error {
 		return err
 	}
 
+	err = registerUIEndpoints(router, conf.WebUI)
+	if err != nil {
+		slog.Error("failed to register ui endpoints", "error message", err.Error())
+		return err
+	}
+
+	err = registerSharedDirs(router, conf.FileServer)
+	if err != nil {
+		slog.Error("failed to register shared directories", "error message", err.Error())
+		return err
+	}
+
+	err = registerFormEndpoints(router)
+	if err != nil {
+		slog.Error("failed to register form endpoints", "error message", err.Error())
+		return err
+	}
+
 	serverAddress := fmt.Sprintf("%s:%d", conf.ServerOptions.Address, conf.ServerOptions.Port)
 	readTimeout := time.Duration(conf.ServerOptions.ReadTimeoutSec) * time.Second
 	writeTimeout := time.Duration(conf.ServerOptions.WriteTimeoutSec) * time.Second

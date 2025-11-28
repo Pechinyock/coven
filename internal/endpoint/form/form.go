@@ -13,13 +13,13 @@ func GetFormEndpoints() []endpoint.Endpoint {
 			Path:        path.Join(FormPrefix, "card"),
 			Methods:     []string{"POST", "GET", "PUT", "DELETE"},
 			Secure:      true,
-			HandlerFunc: nil,
+			HandlerFunc: cardHandleFunc,
 		},
 		{
 			Path:        path.Join(FormPrefix, "image"),
 			Methods:     []string{"POST", "GET", "DELETE"},
 			Secure:      true,
-			HandlerFunc: nil,
+			HandlerFunc: imagePoolFileFunc,
 		},
 	}
 }

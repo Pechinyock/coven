@@ -22,14 +22,17 @@ func SetUIBundle(newBundle ui.WebUIBundle) {
 	uiBundle = newBundle
 }
 
-func GetUIEndpoints(uiBundle *ui.WebUIBundle) []endpoint.Endpoint {
+func GetUIEndpoints() []endpoint.Endpoint {
 	return []endpoint.Endpoint{
 		{
 			Path:    "/",
 			Methods: []string{"GET"},
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				uiBundle.Render("main", w, nil)
+				err := uiBundle.Render("main", w, nil)
+				if err != nil {
+					SendFailed(w, fmt.Sprintf("failed to load %q", "main"))
+				}
 			},
 		},
 		{

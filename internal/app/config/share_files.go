@@ -9,7 +9,10 @@ type ShareDirConfig struct {
 }
 
 type FileServerConfig struct {
-	ShareDirConfigs []ShareDirConfig `json:"sharedDirs"`
+	ShareDirConfigs  []ShareDirConfig `json:"sharedDirs"`
+	CompleteCardsDir *ShareDirConfig  `json:"completeCardsDir"`
+	CardTemplatesDir *ShareDirConfig  `json:"cardTemplatesDir"`
+	ImagePoolDir     *ShareDirConfig  `json:"imagePoolDir"`
 }
 
 func (f *FileServerConfig) Validate() error {

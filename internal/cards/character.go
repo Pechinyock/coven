@@ -12,7 +12,6 @@ import (
 
 /* [LAME] HARDCODE */
 const templatePath = "C:/_dev/card_templates"
-const baseUriPath = "image-pool"
 
 type Character struct {
 	Name           string `json:"name"`
