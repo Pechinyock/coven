@@ -28,6 +28,8 @@ func Init() (*config.CovenWebConfig, error) {
 	return config, nil
 }
 
+var Address string
+
 func Run(conf *config.CovenWebConfig) error {
 	router := http.NewServeMux()
 	withPermanent := addPermanentMiddlewares(router)
@@ -71,7 +73,8 @@ func Run(conf *config.CovenWebConfig) error {
 		Handler:      withMiddlewares,
 	}
 	if conf.Https != nil {
-		slog.Info(fmt.Sprintf("running server at https://%s", serverAddress))
+		Address = fmt.Sprintf("https://%s", serverAddress)
+		slog.Info(fmt.Sprintf("running server at %s", Address))
 		err = server.ListenAndServeTLS(conf.Https.CertFilePath,
 			conf.Https.CertKeyFilePath)
 		if err != nil {
@@ -80,7 +83,8 @@ func Run(conf *config.CovenWebConfig) error {
 		}
 	} else {
 		slog.Warn("https certificate is not provided running as http")
-		slog.Info(fmt.Sprintf("running server at http://%s", serverAddress))
+		Address = fmt.Sprintf("http://%s", serverAddress)
+		slog.Info(fmt.Sprintf("running server at %s", Address))
 		err = server.ListenAndServe()
 		if err != nil {
 			slog.Error("failed to run http server", "error message", err.Error())
