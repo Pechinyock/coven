@@ -65,3 +65,13 @@ func IsExtension(fileName, ext string) bool {
 func IsValidPath(s string) bool {
 	return s == filepath.Clean(s) && filepath.Base(s) == s
 }
+
+func CreateDirIfNotExists(path string) error {
+	if !IsDirExists(path) {
+		err := os.MkdirAll(path, 0755)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

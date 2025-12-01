@@ -2,6 +2,7 @@ package app
 
 import (
 	"coven/internal/app/config"
+	"coven/internal/endpoint"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -27,8 +28,6 @@ func Init() (*config.CovenWebConfig, error) {
 
 	return config, nil
 }
-
-var Address string
 
 func Run(conf *config.CovenWebConfig) error {
 	router := http.NewServeMux()
@@ -64,6 +63,10 @@ func Run(conf *config.CovenWebConfig) error {
 	}
 
 	serverAddress := fmt.Sprintf("%s:%d", conf.ServerOptions.Address, conf.ServerOptions.Port)
+
+	endpoint.Address = conf.ServerOptions.Address
+	endpoint.Port = conf.ServerOptions.Port
+
 	readTimeout := time.Duration(conf.ServerOptions.ReadTimeoutSec) * time.Second
 	writeTimeout := time.Duration(conf.ServerOptions.WriteTimeoutSec) * time.Second
 	server := http.Server{
@@ -73,8 +76,11 @@ func Run(conf *config.CovenWebConfig) error {
 		Handler:      withMiddlewares,
 	}
 	if conf.Https != nil {
-		Address = fmt.Sprintf("https://%s", serverAddress)
-		slog.Info(fmt.Sprintf("running server at %s", Address))
+		scheme := "https"
+		endpoint.Scheme = scheme
+
+		address := fmt.Sprintf("%s://%s", scheme, serverAddress)
+		slog.Info(fmt.Sprintf("running server at %s", address))
 		err = server.ListenAndServeTLS(conf.Https.CertFilePath,
 			conf.Https.CertKeyFilePath)
 		if err != nil {
@@ -83,8 +89,11 @@ func Run(conf *config.CovenWebConfig) error {
 		}
 	} else {
 		slog.Warn("https certificate is not provided running as http")
-		Address = fmt.Sprintf("http://%s", serverAddress)
-		slog.Info(fmt.Sprintf("running server at %s", Address))
+		scheme := "http"
+		endpoint.Scheme = scheme
+
+		address := fmt.Sprintf("%s://%s", scheme, serverAddress)
+		slog.Info(fmt.Sprintf("running server at %s", address))
 		err = server.ListenAndServe()
 		if err != nil {
 			slog.Error("failed to run http server", "error message", err.Error())

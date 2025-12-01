@@ -1,6 +1,8 @@
 package config
 
-import "fmt"
+import (
+	"log/slog"
+)
 
 type ShareDirConfig struct {
 	RouteName   string `json:"routeName"`
@@ -13,9 +15,10 @@ type FileServerConfig struct {
 	CompleteCardsDir *ShareDirConfig  `json:"completeCardsDir"`
 	CardTemplatesDir *ShareDirConfig  `json:"cardTemplatesDir"`
 	ImagePoolDir     *ShareDirConfig  `json:"imagePoolDir"`
+	CardsJsonDataDir *ShareDirConfig  `json:"cardsJsonDataDir"`
 }
 
 func (f *FileServerConfig) Validate() error {
-	fmt.Println("file server config validation is not implemented")
+	slog.Warn("not implemented")
 	return nil
 }

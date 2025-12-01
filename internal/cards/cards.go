@@ -28,13 +28,9 @@ var typeTemplPath = map[string]string{
 	"potions":     "",
 }
 
-var CardsOutput string
-var ImagePool string
-var CardTemplates string
-
-func GenerateCard(cardType, cardName string, data any) error {
+func GenerateCard(cardType, cardName, outputPath, templatesPath string, data any) error {
 	templateName := typeTemplPath[cardType]
-	templatePath := filepath.Join(CardTemplates, templateName)
+	templatePath := filepath.Join(templatesPath, templateName)
 	slog.Info("ready to generate card", "path", templateName)
 	if templateName == "" {
 		return errors.New("cant't find file")
@@ -44,12 +40,12 @@ func GenerateCard(cardType, cardName string, data any) error {
 	if err != nil {
 		return err
 	}
-	if !utils.IsDirExists(CardsOutput) {
-		if err := os.MkdirAll(CardsOutput, 0755); err != nil {
+	if !utils.IsDirExists(outputPath) {
+		if err := os.MkdirAll(outputPath, 0755); err != nil {
 			return err
 		}
 	}
-	fullPath := path.Join(CardsOutput, cardType, cardName)
+	fullPath := path.Join(outputPath, cardType, cardName)
 	if utils.IsFileExists(fullPath) {
 		slog.Warn("overriding existg card", "path", fullPath)
 	}

@@ -3,11 +3,13 @@ package app
 import (
 	"coven/internal/app/config"
 	"coven/internal/cards"
+	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/utils"
 	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"path/filepath"
 	"strings"
 )
 
@@ -21,6 +23,7 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 			CompleteCardsDir: defaultCompleteDir(),
 			CardTemplatesDir: defaultTemplatesDir(),
 			ImagePoolDir:     defaultImagePoolDir(),
+			CardsJsonDataDir: defaultJsonDataDir(),
 		}
 	}
 
@@ -43,6 +46,16 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 	if conf.ImagePoolDir == nil {
 		conf.ImagePoolDir = defaultImagePoolDir()
 		printWarn("cards image pool", conf.ImagePoolDir.DirPath)
+	}
+	if conf.CardsJsonDataDir == nil {
+		conf.CardsJsonDataDir = defaultJsonDataDir()
+		printWarn("cards json data", conf.ImagePoolDir.DirPath)
+	}
+	coventDirs := map[string]*config.ShareDirConfig{
+		"image_pool":      conf.ImagePoolDir,
+		"cards_json_data": conf.CardsJsonDataDir,
+		"cards_templates": conf.CardTemplatesDir,
+		"complete_cards":  conf.CompleteCardsDir,
 	}
 
 	handlerSetter := func(routeName, path, source string) http.Handler {
@@ -67,21 +80,110 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 			panic(fmt.Sprintf("unknown token place for file server \n directory name: %s\n route name: %s", path, routeName))
 		}
 	}
+
 	optional := conf.ShareDirConfigs
 	if len(optional) != 0 {
 		for _, e := range optional {
 			handlerSetter(e.RouteName, e.DirPath, e.TokenSource)
+			err := utils.CreateDirIfNotExists(e.DirPath)
+			if err != nil {
+				slog.Error("failed to create optional shared dir", "path", e.DirPath)
+			}
 		}
 	} else {
 		slog.Info("no additional share dir to registry")
 	}
-	handlerSetter(conf.CompleteCardsDir.RouteName, conf.CompleteCardsDir.DirPath, conf.CompleteCardsDir.TokenSource)
-	handlerSetter(conf.CardTemplatesDir.RouteName, conf.CardTemplatesDir.DirPath, conf.CardTemplatesDir.TokenSource)
-	handlerSetter(conf.ImagePoolDir.RouteName, conf.ImagePoolDir.DirPath, conf.ImagePoolDir.TokenSource)
 
-	cards.CardsOutput = conf.CompleteCardsDir.DirPath
-	cards.ImagePool = conf.ImagePoolDir.DirPath
-	cards.CardTemplates = conf.CardTemplatesDir.DirPath
+	for _, dir := range coventDirs {
+		handlerSetter(dir.RouteName, dir.DirPath, dir.TokenSource)
+	}
+
+	complete := shareddirs.SharedDirPaths{
+		Path: conf.CompleteCardsDir.DirPath,
+		Uri:  conf.CompleteCardsDir.RouteName,
+	}
+	shareddirs.CompleteCardsDirPath = complete
+
+	jsonData := shareddirs.SharedDirPaths{
+		Path: conf.CardsJsonDataDir.DirPath,
+		Uri:  conf.CardsJsonDataDir.RouteName,
+	}
+	shareddirs.CardsJsonDataDirPath = jsonData
+
+	imgPool := shareddirs.SharedDirPaths{
+		Path: conf.ImagePoolDir.DirPath,
+		Uri:  conf.ImagePoolDir.RouteName,
+	}
+	shareddirs.ImagePoolDirPath = imgPool
+
+	templates := shareddirs.SharedDirPaths{
+		Path: conf.CardTemplatesDir.DirPath,
+		Uri:  conf.CardTemplatesDir.RouteName,
+	}
+	shareddirs.CardTemplatesDirPath = templates
+
+	createSubDirs := func(base string, names []string) error {
+		for _, e := range names {
+			fullPath := filepath.Join(base, e)
+			err := utils.CreateDirIfNotExists(fullPath)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	names := []string{}
+	for n := range cards.CardTypes {
+		names = append(names, n)
+	}
+
+	err := createSubDirs(complete.Path, names)
+	if err != nil {
+		return err
+	}
+
+	err = createSubDirs(jsonData.Path, names)
+	if err != nil {
+		return err
+	}
+
+	err = createSubDirs(imgPool.Path, names)
+	if err != nil {
+		return err
+	}
+
+	logSetup := func(name string, elem shareddirs.SharedDirPaths) {
+		slog.Info(fmt.Sprintf("%s directory has been initialized", name),
+			"physical path", elem.Path,
+			"web uri", elem.Uri,
+		)
+	}
+
+	err = utils.CreateDirIfNotExists(complete.Path)
+	if err != nil {
+		return err
+	}
+
+	err = utils.CreateDirIfNotExists(jsonData.Path)
+	if err != nil {
+		return err
+	}
+
+	err = utils.CreateDirIfNotExists(templates.Path)
+	if err != nil {
+		return err
+	}
+
+	err = utils.CreateDirIfNotExists(imgPool.Path)
+	if err != nil {
+		return err
+	}
+
+	logSetup("complete cards", complete)
+	logSetup("cards json data", jsonData)
+	logSetup("card templates", templates)
+	logSetup("image pool", imgPool)
 
 	return nil
 }
@@ -106,6 +208,14 @@ func defaultImagePoolDir() *config.ShareDirConfig {
 	return &config.ShareDirConfig{
 		RouteName:   "image-pool",
 		DirPath:     "./card_image_pool",
+		TokenSource: "none",
+	}
+}
+
+func defaultJsonDataDir() *config.ShareDirConfig {
+	return &config.ShareDirConfig{
+		RouteName:   "cards-json-data",
+		DirPath:     "./cards_json_data",
 		TokenSource: "none",
 	}
 }

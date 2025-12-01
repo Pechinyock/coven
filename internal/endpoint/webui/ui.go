@@ -14,7 +14,6 @@ import (
 
 const UIPrefix = "/ui"
 
-/* THIS ONE IS COMPLETLTY SHIT! */
 var uiBundle ui.WebUIBundle
 
 func SetUIBundle(newBundle ui.WebUIBundle) {

@@ -2,6 +2,8 @@ package form
 
 import (
 	"coven/internal/cards"
+	"coven/internal/endpoint"
+	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/endpoint/webui"
 	"fmt"
 	"log/slog"
@@ -44,15 +46,28 @@ func prepareCharacterCreation(r *http.Request) error {
 	decorTxt := r.FormValue("character-description")
 	role := r.FormValue("character-role")
 	selectedImageName := r.FormValue("selected-character-image")
-	/*[LAME]*/
-	imgFullRemotePath := fmt.Sprintf("https://localhost:6969/image-pool/%s/%s", characterGroupName, selectedImageName)
+
+	/* scheme, address, port, imagepool base uri, group name, selected image name*/
+	imgFullRemotePath := fmt.Sprintf("%s://%s:%d/%s/%s/%s",
+		endpoint.Scheme,
+		endpoint.Address,
+		endpoint.Port,
+		shareddirs.ImagePoolDirPath.Uri,
+		characterGroupName,
+		selectedImageName,
+	)
 	data := cards.Character{
 		Name:           charName,
 		DecorationText: decorTxt,
 		Role:           role,
 		ImgPath:        imgFullRemotePath,
 	}
-	err := cards.GenerateCard(characterGroupName, charName, data)
+	err := cards.GenerateCard(characterGroupName,
+		charName,
+		shareddirs.CompleteCardsDirPath.Path,
+		shareddirs.CardTemplatesDirPath.Path,
+		data,
+	)
 	if err != nil {
 		slog.Error("failed to create card", "card name", charName)
 		return err

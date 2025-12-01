@@ -2,6 +2,7 @@ package form
 
 import (
 	"coven/internal/cards"
+	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/endpoint/webui"
 	"coven/internal/utils"
 	"fmt"
@@ -71,7 +72,7 @@ func uploadImage(w http.ResponseWriter, r *http.Request) {
 		webui.SendFailed(w, `Недопустимые символы в имени файла. Убедитесь, что название не содержит: < > : \" | ? *`)
 		return
 	}
-	fullPath := filepath.Join(cards.ImagePool, groupName, fileName)
+	fullPath := filepath.Join(shareddirs.ImagePoolDirPath.Path, groupName, fileName)
 	dst, err := os.Create(fullPath)
 	if err != nil {
 		webui.SendFailed(w,

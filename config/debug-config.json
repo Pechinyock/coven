@@ -52,6 +52,11 @@
             "routeName": "image-pool",
             "dirPath": "C:/_dev/card_image_pool",
             "tokenSource": "none"
+        },
+        "cardsJsonDataDir": {
+            "routeName": "cards-json-data",
+            "dirPath": "C:/_dev/card_image_pool",
+            "tokenSource": "none"
         }
     }
 }

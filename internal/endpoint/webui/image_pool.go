@@ -1,6 +1,7 @@
 package webui
 
 import (
+	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/projection"
 	"errors"
 	"os"
@@ -9,14 +10,13 @@ import (
 )
 
 /*[LAME] HARDCODE */
-const physicalBasePath = "C:/_dev/card_image_pool"
 const baseUriPath = "image-pool"
 
 func loadImagesPrewiewData(poolGroupName string) ([]projection.ImageProj, error) {
 	if poolGroupName == "" {
 		return nil, errors.New("pool group name is empty")
 	}
-	pathToDir := path.Join(physicalBasePath, poolGroupName)
+	pathToDir := path.Join(shareddirs.ImagePoolDirPath.Path, poolGroupName)
 	files, err := os.ReadDir(pathToDir)
 	if err != nil {
 		return nil, err
