@@ -52,9 +52,16 @@ func (b *WebUIBundle) loadTemplates(templatesPaths ...[]string) {
 	}
 
 	allTemplateFilePaths := make([]string, 0)
+	rootFullPath, err := utils.GetFullPath(b.configuration.RootPath)
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to load templates %s", err.Error()))
+		return
+	}
+	slog.Info("loading templates", "root path", rootFullPath)
+
 	for _, tmplPaths := range templatesPaths {
 		for _, templPath := range tmplPaths {
-			fullPath := path.Join(b.configuration.RootPath, templPath)
+			fullPath := path.Join(rootFullPath, templPath)
 			if utils.IsGlob(fullPath) {
 				paths, err := filepath.Glob(fullPath)
 				if len(paths) == 0 {

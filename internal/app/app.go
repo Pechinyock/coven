@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	version     = "dev"
-	gitShortSha = "none"
+	Version     = "dev"
+	GitShortSha = "none"
 )
 
 func Init() (*config.CovenWebConfig, error) {
-	fmt.Printf("version: '%s' git commit sha: '%s'\n", version, gitShortSha)
+	fmt.Printf("version: '%s' git commit sha: '%s'\n", Version, GitShortSha)
 	config, err := readConfig()
 	if err != nil {
 		return nil, err
