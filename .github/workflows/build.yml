@@ -15,17 +15,14 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21'
+        go-version: '1.24.4'
 
     - name: Build Windows app from Linux
       run: make linux-builder_win-x64
 
     - name: Create Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
+      uses: ncipollo/release-action@v1
       with:
-        name: Release v${{ github.sha }}
-        tag_name: ${{ github.sha }}
-        files: _bin/win-x64/*
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.sha }}
+        name: Build ${{ github.sha }}
+        artifacts: "_bin/win-x64/*"
