@@ -18,7 +18,7 @@ win-builder_build:
 
 linux-builder_build:
 	GOOS=$(GOOS) GOARCH=$(GOARCH) \
-	go build -o "$(WIN_OUT_DIR)/$(APP_NAME)" "$(CURDIR)/cmd/web/main.go"
+	go build -o "$(WIN_OUT_DIR)/$(APP_NAME).exe" "$(CURDIR)/cmd/web/main.go"
 
 win-builder_win-x64:
 	$(MAKE) win-builder_build GOOS=windows GOARCH=amd64
