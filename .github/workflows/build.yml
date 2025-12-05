@@ -25,11 +25,8 @@ jobs:
 
     - name: Create ZIP archive
       run: |
-        mkdir -p _release_temp/coven
-        cp -r _bin/win-x64/* _release_temp/coven/
-        cd _release_temp
-        zip -r ../coven-windows-x64.zip coven/
-        cd .. && rm -rf _release_temp
+        cd _bin/win-x64
+        zip -r ../coven-windows-x64.zip .
 
     - name: Create Release
       env:
@@ -43,7 +40,7 @@ jobs:
           --target "$GITHUB_SHA"
         
         gh release upload "$TAG" \
-          coven-windows.zip \
+          _bin/coven-windows-x64.zip \
           --clobber
         
         echo "Release created: https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
