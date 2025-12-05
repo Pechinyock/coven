@@ -6,6 +6,9 @@ on:
 
 jobs:
   build-and-release:
+    permissions:
+      contents: write
+
     runs-on: ubuntu-latest
     
     steps:
@@ -20,17 +23,24 @@ jobs:
     - name: Build Windows app from Linux
       run: make linux-builder_win-x64
 
+    - name: Create ZIP archive
+      run: |
+        cd _bin/win-x64
+        zip -r ../coven-windows-x64.zip .
+
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          # Release Notes for ${{ github.ref }}
-          - Fixes a bug.
-          - Adds a new feature.
-        draft: false
-        prerelease: false
+      run: |
+        TAG="build-${GITHUB_SHA:0:8}"
+
+        gh release create "$TAG" \
+          --title "Build $TAG" \
+          --notes "Automated build from commit ${GITHUB_SHA}" \
+          --target "$GITHUB_SHA"
+        
+        gh release upload "$TAG" \
+          _bin/coven-windows-x64.zip \
+          --clobber
+        
+        echo "Release created: https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
