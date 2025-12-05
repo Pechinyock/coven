@@ -43,7 +43,7 @@ jobs:
           --target "$GITHUB_SHA"
         
         gh release upload "$TAG" \
-          _bin/coven-windows-x64.zip \
+          coven-windows.zip \
           --clobber
         
         echo "Release created: https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
