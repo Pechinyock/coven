@@ -1,0 +1,54 @@
+{
+    "server": {
+        "address": "localhost",
+        "port": 6969,
+        "readTimeoutSec": 30,
+        "writeTimeoutSec": 30
+    },
+    "log": {
+        "consoleLogger": {
+            "level": "debug"
+        }
+    },
+    "middlewares": {
+        "requestLogger": {
+            "level": "debug"
+        }
+    },
+    "webUI": {
+        "rootPath": "./ui",
+        "staticFilesShare": {
+            "routeName": "assets",
+            "dirPath": "static",
+            "tokenSource": "none"
+        },
+        "templatePaths": [
+            "layouts/*.html",
+            "pages/*.html",
+            "components/*.html",
+            "widgets/*.html"
+        ]
+    },
+    "fileServer": {
+        "completeCardsDir": {
+            "routeName": "complete-cards",
+            "dirPath": "./data/cards_output",
+            "tokenSource": "none"
+        },
+        "cardTemplatesDir": {
+            "routeName": "card-templates",
+            "dirPath": "./data/card_templates",
+            "tokenSource": "none"
+        },
+        "imagePoolDir": {
+            "routeName": "image-pool",
+            "dirPath": "./data/card_image_pool",
+            "tokenSource": "none"
+        },
+        "cardsJsonDataDir": {
+            "routeName": "cards-json-data",
+            "dirPath": "./data/card_image_pool",
+            "tokenSource": "none"
+        }
+    }
+}

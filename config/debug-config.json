@@ -1,0 +1,62 @@
+{
+    "server": {
+        "address": "localhost",
+        "port": 6969,
+        "readTimeoutSec": 30,
+        "writeTimeoutSec": 30
+    },
+    "https": {
+        "certFilePath": "C:/_dev/coven/cert/localhost+3.pem",
+        "certKeyFilePath": "C:/_dev/coven/cert/localhost+3-key.pem"
+    },
+    "log": {
+        "consoleLogger": {
+            "level": "debug"
+        },
+        "fileLogger": {
+            "level": "error",
+            "filePath": "C:/_dev/coven/logs"
+        }
+    },
+    "middlewares": {
+        "requestLogger": {
+            "level": "debug"
+        }
+    },
+    "webUI": {
+        "rootPath": "C:/_dev/coven/UI/coven",
+        "staticFilesShare": {
+            "routeName": "assets",
+            "dirPath": "static",
+            "tokenSource": "none"
+        },
+        "templatePaths": [
+            "layouts/*.html",
+            "pages/*.html",
+            "components/*.html",
+            "widgets/*.html"
+        ]
+    },
+    "fileServer": {
+        "completeCardsDir": {
+            "routeName": "complete-cards",
+            "dirPath": "C:/_dev/cards_output",
+            "tokenSource": "none"
+        },
+        "cardTemplatesDir": {
+            "routeName": "card-templates",
+            "dirPath": "C:/_dev/card_templates",
+            "tokenSource": "none"
+        },
+        "imagePoolDir": {
+            "routeName": "image-pool",
+            "dirPath": "C:/_dev/card_image_pool",
+            "tokenSource": "none"
+        },
+        "cardsJsonDataDir": {
+            "routeName": "cards-json-data",
+            "dirPath": "C:/_dev/card_image_pool",
+            "tokenSource": "none"
+        }
+    }
+}
