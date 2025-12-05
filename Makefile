@@ -16,10 +16,11 @@ win-builder_win-x64:
 	$(MAKE) win-builder_build GOOS=windows GOARCH=amd64
 	xcopy "$(UI_DIR)" "$(WIN_OUT_DIR)/ui" /E /I /Y >nul
 	xcopy "$(TEMPLATES_DIR)" "$(WIN_OUT_DIR)/data/card_templates" /E /I /Y >nul
-	copy "$(CURDIR)/config\$(DEFAULT_CONFIG)" "$(WIN_OUT_DIR)\" >nul 2>&1 || echo "Config not found"
+	copy "$(CURDIR)/config\$(DEFAULT_CONFIG)" "$(WIN_OUT_DIR)\"
 
 linux-builder_win-x64:
 	$(MAKE) win-builder_build GOOS=windows GOARCH=amd64
+	mkdir $(WIN_OUT_DIR)/data && \
 	cp -r "$(UI_DIR)" "$(WIN_OUT_DIR)/ui/" && \
 	cp -r "$(TEMPLATES_DIR)" "$(WIN_OUT_DIR)/data/card_templates/" && \
-	cp "$(CURDIR)/config/$(DEFAULT_CONFIG)" "$(WIN_OUT_DIR)/" 2>/dev/null || echo "Config not found"
+	cp "$(CURDIR)/config/$(DEFAULT_CONFIG)" "$(WIN_OUT_DIR)/"
