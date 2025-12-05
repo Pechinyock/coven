@@ -25,8 +25,11 @@ jobs:
 
     - name: Create ZIP archive
       run: |
-        cd _bin/win-x64
-        zip -r ../coven-windows-x64.zip .
+        mkdir -p _release_temp/coven
+        cp -r _bin/win-x64/* _release_temp/coven/
+        cd _release_temp
+        zip -r ../coven-windows-x64.zip coven/
+        cd .. && rm -rf _release_temp
 
     - name: Create Release
       env:
