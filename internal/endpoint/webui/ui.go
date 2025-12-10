@@ -176,5 +176,35 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				}
 			},
 		},
+		{
+			Path:    "/ui/generated-cards-view",
+			Methods: []string{"GET"},
+			Secure:  true,
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				ch := getChapters()
+				err := uiBundle.Render("generated_cards_view", w, ch)
+				if err != nil {
+					SendFailed(w, fmt.Sprintf("failed to load %q", "generated_cards_view"))
+				}
+			},
+		},
+		{
+			Path:    "/ui/chapter/{chapterName}",
+			Methods: []string{"GET"},
+			Secure:  true,
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				chapterName := r.PathValue("chapterName")
+				chapter, err := getGeneratedCards(chapterName)
+				if err != nil {
+					SendFailed(w, err.Error())
+					return
+				}
+				err = uiBundle.Render("complete_card_chapter", w, chapter)
+				if err != nil {
+					SendFailed(w, err.Error())
+					return
+				}
+			},
+		},
 	}
 }

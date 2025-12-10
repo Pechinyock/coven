@@ -50,6 +50,12 @@ func Run(conf *config.CovenWebConfig) error {
 		return err
 	}
 
+	err = configureRemoteRepo(conf.RemoteStorage)
+	if err != nil {
+		slog.Error("failed to configure remote repo", "error message", err.Error())
+		return err
+	}
+
 	err = registerSharedDirs(router, conf.FileServer)
 	if err != nil {
 		slog.Error("failed to register shared directories", "error message", err.Error())

@@ -1,8 +1,11 @@
 package cards
 
 import (
+	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/utils"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"html/template"
 	"log/slog"
 	"os"
@@ -55,5 +58,25 @@ func GenerateCard(cardType, cardName, outputPath, templatesPath string, data any
 	}
 	defer fileResult.Close()
 	err = templ.ExecuteTemplate(fileResult, templateName, data)
-	return err
+	if err != nil {
+		return err
+	}
+	jsonOutDir := shareddirs.CardsJsonDataDirPath.Path
+	return saveCardData(jsonOutDir, cardType, cardName, data)
+}
+
+func saveCardData(cardDataDirPath, cardType, cardName string, data any) error {
+	pathToTypeDir := path.Join(cardDataDirPath, cardType)
+	if !utils.IsDirExists(pathToTypeDir) {
+		if err := os.MkdirAll(pathToTypeDir, 0755); err != nil {
+			return err
+		}
+	}
+	jsonBytes, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return err
+	}
+	filename := fmt.Sprintf("%s.json", cardName)
+	saveToPath := filepath.Join(pathToTypeDir, filename)
+	return os.WriteFile(saveToPath, jsonBytes, 0644)
 }

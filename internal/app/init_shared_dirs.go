@@ -49,9 +49,9 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 	}
 	if conf.CardsJsonDataDir == nil {
 		conf.CardsJsonDataDir = defaultJsonDataDir()
-		printWarn("cards json data", conf.ImagePoolDir.DirPath)
+		printWarn("cards json data", conf.CardsJsonDataDir.DirPath)
 	}
-	coventDirs := map[string]*config.ShareDirConfig{
+	covenDirs := map[string]*config.ShareDirConfig{
 		"image_pool":      conf.ImagePoolDir,
 		"cards_json_data": conf.CardsJsonDataDir,
 		"cards_templates": conf.CardTemplatesDir,
@@ -94,7 +94,7 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 		slog.Info("no additional share dir to registry")
 	}
 
-	for _, dir := range coventDirs {
+	for _, dir := range covenDirs {
 		handlerSetter(dir.RouteName, dir.DirPath, dir.TokenSource)
 	}
 

@@ -6,12 +6,13 @@ import (
 )
 
 type CovenWebConfig struct {
-	ServerOptions *ServerConfig      `json:"server"`
-	Https         *HttpsConfig       `json:"https"`
-	Log           *LogConfig         `json:"log"`
-	Middlewares   *MeddlewaresConfig `json:"middlewares"`
-	WebUI         *WebUIBundleConfig `json:"webUI"`
-	FileServer    *FileServerConfig  `json:"fileServer"`
+	ServerOptions *ServerConfig          `json:"server"`
+	Https         *HttpsConfig           `json:"https"`
+	Log           *LogConfig             `json:"log"`
+	Middlewares   *MeddlewaresConfig     `json:"middlewares"`
+	WebUI         *WebUIBundleConfig     `json:"webUI"`
+	FileServer    *FileServerConfig      `json:"fileServer"`
+	RemoteStorage *RemoteStorageSettings `json:"remoteStorageSettings"`
 }
 
 func (c *CovenWebConfig) Validate() error {
@@ -23,6 +24,7 @@ func (c *CovenWebConfig) Validate() error {
 		c.Middlewares,
 		c.WebUI,
 		c.FileServer,
+		c.RemoteStorage,
 	}
 	errs := []error{}
 	for _, cfg := range childs {
