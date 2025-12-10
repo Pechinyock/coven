@@ -21,5 +21,11 @@ func GetFormEndpoints() []endpoint.Endpoint {
 			Secure:      true,
 			HandlerFunc: imagePoolFileFunc,
 		},
+		{
+			Path:        path.Join(FormPrefix, "push-changes"),
+			Methods:     []string{"POST"},
+			Secure:      true,
+			HandlerFunc: pushChanges,
+		},
 	}
 }

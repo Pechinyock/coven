@@ -1,14 +1,14 @@
 package projection
 
 type CardViewSkeletProj struct {
-	Chapters []ChapterProj
+	Chapters map[string]string
 }
 
 type ChapterProj struct {
-	Title string
 	Cards []CompletCardViewProj
 }
 
 type CompletCardViewProj struct {
-	Name string
+	Name       string
+	IFramePath string
 }

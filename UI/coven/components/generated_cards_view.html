@@ -1,10 +1,23 @@
-{{range .Chapters}}
+<h3 class="text-center mt-4">Сгенерированные карты</h3>
+
+{{range $key, $value := .Chapters}}
 <div>
-    <h3>{{.Title}}</h3>
-    <div>
-        {{range .Cards}}
-        <div>card</div>
-        {{end}}
+    <div hx-get="/ui/chapter/{{$key}}" hx-target="#chapter-{{$key}}"
+        hx-trigger="load"></div>
+    <div class="accordion accordion-flush mt-4">
+        <div class="accordion-header">
+            <button class="accordion-button" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapse-{{$key}}">
+                {{$value}}
+            </button>
+        </div>
+        <div id="collapse-{{$key}}" class="accordion-collapse collapse">
+            <div class="accordion-body">
+                <div id="chapter-{{$key}}"
+                    class="row row-cols-4 g-2 overflow-auto">
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {{end}}

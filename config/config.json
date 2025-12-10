@@ -7,12 +7,12 @@
     },
     "log": {
         "consoleLogger": {
-            "level": "debug"
+            "level": "info"
         }
     },
     "middlewares": {
         "requestLogger": {
-            "level": "debug"
+            "level": "error"
         }
     },
     "webUI": {
@@ -37,7 +37,7 @@
         },
         "cardTemplatesDir": {
             "routeName": "card-templates",
-            "dirPath": "./data/card_templates",
+            "dirPath": "./ui/card_templates",
             "tokenSource": "none"
         },
         "imagePoolDir": {
@@ -47,8 +47,12 @@
         },
         "cardsJsonDataDir": {
             "routeName": "cards-json-data",
-            "dirPath": "./data/card_image_pool",
+            "dirPath": "./data/cards_json_data",
             "tokenSource": "none"
         }
+    },
+    "remoteStorageSettings": {
+        "repoStorageAddress": "https://github.com/Pechinyock/coven-data.git",
+        "localDirPath": "./data"
     }
 }

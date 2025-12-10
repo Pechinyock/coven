@@ -38,6 +38,7 @@
         ]
     },
     "fileServer": {
+        "repoStorageAddress": "https://github.com/Pechinyock/coven-data.git",
         "completeCardsDir": {
             "routeName": "complete-cards",
             "dirPath": "C:/_dev/cards_output",
@@ -55,8 +56,12 @@
         },
         "cardsJsonDataDir": {
             "routeName": "cards-json-data",
-            "dirPath": "C:/_dev/card_image_pool",
+            "dirPath": "C:/_dev/cards_json_data",
             "tokenSource": "none"
         }
+    },
+    "remoteStorageSettings": {
+        "repoStorageAddress": "https://github.com/Pechinyock/coven-data.git",
+        "localDirPath": "C:/_dev/test_data"
     }
 }

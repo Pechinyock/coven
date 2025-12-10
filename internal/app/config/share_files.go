@@ -1,8 +1,6 @@
 package config
 
-import (
-	"log/slog"
-)
+import "fmt"
 
 type ShareDirConfig struct {
 	RouteName   string `json:"routeName"`
@@ -19,6 +17,6 @@ type FileServerConfig struct {
 }
 
 func (f *FileServerConfig) Validate() error {
-	slog.Warn("not implemented")
+	fmt.Println("not implemented")
 	return nil
 }

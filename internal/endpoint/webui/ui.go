@@ -188,5 +188,23 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				}
 			},
 		},
+		{
+			Path:    "/ui/chapter/{chapterName}",
+			Methods: []string{"GET"},
+			Secure:  true,
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				chapterName := r.PathValue("chapterName")
+				chapter, err := getGeneratedCards(chapterName)
+				if err != nil {
+					SendFailed(w, err.Error())
+					return
+				}
+				err = uiBundle.Render("complete_card_chapter", w, chapter)
+				if err != nil {
+					SendFailed(w, err.Error())
+					return
+				}
+			},
+		},
 	}
 }
