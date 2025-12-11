@@ -19,7 +19,9 @@ function selectImagePoolItem(element) {
 function toogleCollapseButtonText(button) {
     if (button.tagName !== 'BUTTON'
         || !button.hasAttribute('data-bs-toggle')
-        || button.getAttribute('data-bs-toggle') !== 'collapse') { /* RETURN */ return; }
+        || button.getAttribute('data-bs-toggle') !== 'collapse') {
+        return;
+    }
 
     if (button.classList.contains(collapsedStyleName)) {
         button.textContent = 'Показать';

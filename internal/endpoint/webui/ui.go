@@ -87,7 +87,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				templName := strings.ReplaceAll(modalName, "-", "_")
 				renderFunc, defined := modalsMap[templName]
 				if !defined {
-					slog.Error("modal winodw not found")
+					slog.Error(fmt.Sprintf("modal winodw not found %q", modalName))
 					w.WriteHeader(http.StatusNotFound)
 					return
 				}
@@ -106,7 +106,6 @@ func GetUIEndpoints() []endpoint.Endpoint {
 					slog.Error("failed to render card create form: unknown type", "provided type", cardType)
 					w.WriteHeader(http.StatusNotFound)
 				}
-				slog.Info("create card form", "asdf", cardType)
 
 				switch cardTypeLower {
 				case "characters":
@@ -203,6 +202,34 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				if err != nil {
 					SendFailed(w, err.Error())
 					return
+				}
+			},
+		},
+		{
+			Path:    "/ui/remote-repo",
+			Methods: []string{"GET"},
+			Secure:  true,
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case "GET":
+					getChanges(w)
+				case "POST":
+					postChanges(w)
+				default:
+					w.WriteHeader(http.StatusMethodNotAllowed)
+				}
+			},
+		},
+		{
+			Path:    "/ui/pull-data",
+			Methods: []string{"GET"},
+			Secure:  true,
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case "GET":
+					pullChanges(w)
+				default:
+					w.WriteHeader(http.StatusMethodNotAllowed)
 				}
 			},
 		},
