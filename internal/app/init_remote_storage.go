@@ -35,6 +35,16 @@ func configureRemoteRepo(conf *config.RemoteStorageSettings) error {
 
 	git.GitDirPath = conf.LocalDirPath
 	git.GitOriginUrl = conf.RepoStorageAddress
-
+	if conf.WorkingBranchName == "" {
+		git.WorkingBranchName = git.GetDefaultBranchName()
+	} else {
+		git.WorkingBranchName = conf.WorkingBranchName
+	}
+	if conf.MainBranchName == "" {
+		git.MainBranchName = "main"
+	} else {
+		git.MainBranchName = conf.MainBranchName
+	}
+	git.CheckoutToMyBranch()
 	return nil
 }

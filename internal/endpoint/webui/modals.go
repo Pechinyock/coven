@@ -6,8 +6,9 @@ import (
 )
 
 var modalsMap = map[string]func(string, http.ResponseWriter){
-	"add_image":   addImageModal,
-	"create_card": createCardModal,
+	"add_image":      addImageModal,
+	"create_card":    createCardModal,
+	"remote_storage": remoteStorageModal,
 }
 
 func addImageModal(templName string, w http.ResponseWriter) {
@@ -20,6 +21,14 @@ func addImageModal(templName string, w http.ResponseWriter) {
 
 func createCardModal(templName string, w http.ResponseWriter) {
 	err := uiBundle.Render(templName, w, cards.CardTypes)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func remoteStorageModal(templName string, w http.ResponseWriter) {
+	err := uiBundle.Render(templName, w, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
