@@ -56,6 +56,7 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 		"cards_json_data": conf.CardsJsonDataDir,
 		"cards_templates": conf.CardTemplatesDir,
 		"complete_cards":  conf.CompleteCardsDir,
+		"card_styles":     conf.CardStylesDir,
 	}
 
 	handlerSetter := func(routeName, path, source string) http.Handler {
@@ -122,6 +123,12 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 	}
 	shareddirs.CardTemplatesDirPath = templates
 
+	cardStyles := shareddirs.SharedDirPaths{
+		Path: conf.CardStylesDir.DirPath,
+		Uri:  conf.CardStylesDir.RouteName,
+	}
+	shareddirs.CardStylesDirPath = cardStyles
+
 	createSubDirs := func(base string, names []string) error {
 		for _, e := range names {
 			fullPath := filepath.Join(base, e)
@@ -138,6 +145,7 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 		names = append(names, n)
 	}
 
+	/* [ISSUE] Could be a function itterating through map defined at top of this func */
 	err := createSubDirs(complete.Path, names)
 	if err != nil {
 		return err
@@ -149,6 +157,11 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 	}
 
 	err = createSubDirs(imgPool.Path, names)
+	if err != nil {
+		return err
+	}
+
+	err = createSubDirs(cardStyles.Path, names)
 	if err != nil {
 		return err
 	}
@@ -180,10 +193,16 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 		return err
 	}
 
+	err = utils.CreateDirIfNotExists(cardStyles.Path)
+	if err != nil {
+		return err
+	}
+
 	logSetup("complete cards", complete)
 	logSetup("cards json data", jsonData)
 	logSetup("card templates", templates)
 	logSetup("image pool", imgPool)
+	logSetup("card styles", cardStyles)
 
 	return nil
 }

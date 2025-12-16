@@ -10,6 +10,7 @@ type ShareDirConfig struct {
 
 type FileServerConfig struct {
 	ShareDirConfigs  []ShareDirConfig `json:"sharedDirs"`
+	CardStylesDir    *ShareDirConfig  `json:"cardStylesDir"`
 	CompleteCardsDir *ShareDirConfig  `json:"completeCardsDir"`
 	CardTemplatesDir *ShareDirConfig  `json:"cardTemplatesDir"`
 	ImagePoolDir     *ShareDirConfig  `json:"imagePoolDir"`

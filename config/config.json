@@ -26,10 +26,16 @@
             "layouts/*.html",
             "pages/*.html",
             "components/*.html",
-            "widgets/*.html"
+            "widgets/*.html",
+            "card_templates/*.html"
         ]
     },
     "fileServer": {
+        "cardStylesDir": {
+            "routeName": "card-styles",
+            "dirPath": "./data/card_styles",
+            "tokenSource": "none"
+        },
         "completeCardsDir": {
             "routeName": "complete-cards",
             "dirPath": "./data/cards_output",

@@ -19,7 +19,6 @@ function setModalName(element) {
         return
     }
     modalBodyLoader.setAttribute('hx-get', `/ui/modal-body/${modalName}`)
-    const hxGetAttrValue = modalBodyLoader.getAttribute('hx-get')
     htmx.process(modalBodyLoader)
     htmx.trigger('#body-loader', 'load-modal-body')
 }

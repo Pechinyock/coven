@@ -32,6 +32,9 @@ var typeTemplPath = map[string]string{
 }
 
 func GenerateCard(cardType, cardName, outputPath, templatesPath string, data any) error {
+	if cardName == "" {
+		return errors.New("card name could't be empty string")
+	}
 	templateName := typeTemplPath[cardType]
 	templatePath := filepath.Join(templatesPath, templateName)
 	slog.Info("ready to generate card", "path", templateName)

@@ -34,11 +34,16 @@
             "layouts/*.html",
             "pages/*.html",
             "components/*.html",
-            "widgets/*.html"
+            "widgets/*.html",
+            "card_templates/*.html"
         ]
     },
     "fileServer": {
-        "repoStorageAddress": "https://github.com/Pechinyock/coven-data.git",
+        "cardStylesDir": {
+            "routeName": "card-styles",
+            "dirPath": "C:/_dev/card_styles",
+            "tokenSource": "none"
+        },
         "completeCardsDir": {
             "routeName": "complete-cards",
             "dirPath": "C:/_dev/cards_output",

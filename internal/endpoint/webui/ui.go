@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"path"
+	"reflect"
 	"strings"
 )
 
@@ -193,12 +194,17 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
 				chapterName := r.PathValue("chapterName")
-				chapter, err := getGeneratedCards(chapterName)
+				chapterData, err := getChapterCardsData(chapterName)
 				if err != nil {
 					SendFailed(w, err.Error())
 					return
 				}
-				err = uiBundle.Render("complete_card_chapter", w, chapter)
+				if chapterData != nil && reflect.ValueOf(chapterData).IsNil() {
+					SendFailed(w, "таких карт ещё нет")
+					return
+				}
+				chapterName = fmt.Sprintf("chapter_%s", chapterName)
+				err = uiBundle.Render(chapterName, w, chapterData)
 				if err != nil {
 					SendFailed(w, err.Error())
 					return
