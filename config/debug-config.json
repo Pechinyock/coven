@@ -41,32 +41,32 @@
     "fileServer": {
         "cardStylesDir": {
             "routeName": "card-styles",
-            "dirPath": "C:/_dev/card_styles",
+            "dirPath": "C:/_dev/coven-data/card_styles",
             "tokenSource": "none"
         },
         "completeCardsDir": {
             "routeName": "complete-cards",
-            "dirPath": "C:/_dev/cards_output",
+            "dirPath": "C:/_dev/coven-data/cards_output",
             "tokenSource": "none"
         },
         "cardTemplatesDir": {
             "routeName": "card-templates",
-            "dirPath": "C:/_dev/card_templates",
+            "dirPath": "C:/_dev/coven-data/card_templates",
             "tokenSource": "none"
         },
         "imagePoolDir": {
             "routeName": "image-pool",
-            "dirPath": "C:/_dev/card_image_pool",
+            "dirPath": "C:/_dev/coven-data/card_image_pool",
             "tokenSource": "none"
         },
         "cardsJsonDataDir": {
             "routeName": "cards-json-data",
-            "dirPath": "C:/_dev/cards_json_data",
+            "dirPath": "C:/_dev/coven-data/cards_json_data",
             "tokenSource": "none"
         }
     },
     "remoteStorageSettings": {
         "repoStorageAddress": "https://github.com/Pechinyock/coven-data.git",
-        "localDirPath": "C:/_dev/test_data"
+        "localDirPath": "C:/_dev/coven-data"
     }
 }

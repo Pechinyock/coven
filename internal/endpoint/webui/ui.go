@@ -88,7 +88,9 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				templName := strings.ReplaceAll(modalName, "-", "_")
 				renderFunc, defined := modalsMap[templName]
 				if !defined {
-					slog.Error(fmt.Sprintf("modal winodw not found %q", modalName))
+					message := fmt.Sprintf("modal winodw not found %q", modalName)
+					SendFailed(w, message)
+					slog.Error(message)
 					w.WriteHeader(http.StatusNotFound)
 					return
 				}
@@ -238,6 +240,12 @@ func GetUIEndpoints() []endpoint.Endpoint {
 					w.WriteHeader(http.StatusMethodNotAllowed)
 				}
 			},
+		},
+		{
+			Path:        "/editor",
+			Methods:     []string{"GET"},
+			Secure:      true,
+			HandlerFunc: loadEditorFunc,
 		},
 	}
 }

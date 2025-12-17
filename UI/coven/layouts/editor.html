@@ -4,26 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coven</title>
+    <title>Card editor</title>
     <link rel="stylesheet" href="assets/style/lib/bootstrap.min.css">
     <link rel="stylesheet" href="assets/style/lib/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/style/app-global.css">
-    <link rel="stylesheet" href="assets/style/cards/common.css">
     <script src="assets/js/lib/htmx.min.js" defer></script>
     <script src="assets/js/lib/htmx-ext-response-targets.min.js" defer></script>
     <script src="assets/js/lib/bootstrap.bundle.min.js" defer></script>
-    <script src="assets/js/modal.js" defer></script>
-    <script src="assets/js/cards.js" defer></script>
+    <script src="assets/js/lib/fabric.js" defer></script>
+    <script src="assets/js/editor.js" defer></script>
+    <style>
+    </style>
 </head>
 
 <body>
-    <main hx-get="/ui/coven" hx-target="#coven" hx-swap="innerHTML"
-        hx-trigger="load">
-        <section id="coven" class="container-fluid">
-
+    <main>
+        <section class="row">
+            <div class="col-3"></div>
+            <div class="col-9">
+                <canvas id="card-canvas" style="width: 700px; height: 900px;"></canvas>
+            </div>
         </section>
     </main>
 </body>
-
 
 </html>
