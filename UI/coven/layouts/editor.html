@@ -8,21 +8,79 @@
     <link rel="stylesheet" href="assets/style/lib/bootstrap.min.css">
     <link rel="stylesheet" href="assets/style/lib/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/style/app-global.css">
+    <link rel="stylesheet" href="assets/style/editor.css">
     <script src="assets/js/lib/htmx.min.js" defer></script>
     <script src="assets/js/lib/htmx-ext-response-targets.min.js" defer></script>
     <script src="assets/js/lib/bootstrap.bundle.min.js" defer></script>
     <script src="assets/js/lib/fabric.js" defer></script>
-    <script src="assets/js/editor.js" defer></script>
-    <style>
-    </style>
+    <script type="module" src="assets/js/editor/editor.js" defer></script>
+    <script type="module" src="assets/js/editor/toolbar.js" defer></script>
+    <script type="module" src="assets/js/editor/objects_view.js" defer></script>
 </head>
 
 <body>
-    <main>
+    <main class="container-fluid">
         <section class="row">
-            <div class="col-3"></div>
-            <div class="col-9">
-                <canvas id="card-canvas" style="width: 700px; height: 900px;"></canvas>
+            <div class="col-2">
+                <div class="accordion accordion-flush mt-4">
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-text">
+                            Текст
+                        </button>
+                    </div>
+                    <div id="collapse-text"
+                        class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col">
+                                    Цвет: <input type="color"
+                                        id="toolbar-txt-color" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Прозрачность: <input type="range" min="0"
+                                        max="100" value="100"
+                                        id="toolbar-txt-transparancy" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Размер шрифта: <input type="range" min="10"
+                                        max="36" value="14"
+                                        id="toolbar-txt-font-size" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <button id="toolbar-add-txt"
+                                    class="btn btn-primary" disabled>Новый
+                                    текст</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-objects-view">
+                            Объекты
+                        </button>
+                    </div>
+                    <div id="collapse-objects-view"
+                        class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div id="objects-view" class="objects-view">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <canvas id="card-canvas"></canvas>
             </div>
         </section>
     </main>
