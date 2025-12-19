@@ -15,13 +15,14 @@
     <script src="assets/js/lib/fabric.js" defer></script>
     <script type="module" src="assets/js/editor/editor.js" defer></script>
     <script type="module" src="assets/js/editor/toolbar.js" defer></script>
-    <script type="module" src="assets/js/editor/objects_view.js" defer></script>
+    <script type="module" src="assets/js/editor/color.js" defer></script>
+    <script type="module" src="assets/js/editor/objects_ordering.js" defer></script>
 </head>
 
 <body>
-    <main class="container-fluid">
+    <main class="container-fluid mt-4">
         <section class="row">
-            <div class="col-2">
+            <div class="col-3">
                 <div class="accordion accordion-flush mt-4">
                     <div class="accordion-header">
                         <button class="accordion-button" type="button"
@@ -44,15 +45,39 @@
                                 <div class="col">
                                     Прозрачность: <input type="range" min="0"
                                         max="100" value="100"
-                                        id="toolbar-txt-transparancy" disabled>
+                                        id="toolbar-txt-opacity" disabled>
                                 </div>
                             </div>
                             <hr>
                             <div class="row">
                                 <div class="col">
                                     Размер шрифта: <input type="range" min="10"
-                                        max="36" value="14"
+                                        max="56" value="24"
                                         id="toolbar-txt-font-size" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Цвет обводки: <input type="color"
+                                        id="toolbar-txt-stroke-color" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Ширина: <input type="range" min="0" max="10"
+                                        value="0" id="toolbar-txt-stroke-width"
+                                        disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Прозрачность: <input type="range" min="0"
+                                        max="100" value="100"
+                                        id="toolbar-txt-stroke-opacity"
+                                        disabled>
                                 </div>
                             </div>
                             <hr>
@@ -63,24 +88,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="accordion-header">
-                        <button class="accordion-button" type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapse-objects-view">
-                            Объекты
-                        </button>
-                    </div>
-                    <div id="collapse-objects-view"
-                        class="accordion-collapse collapse show">
-                        <div class="accordion-body">
-                            <div id="objects-view" class="objects-view">
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="col">
                 <canvas id="card-canvas"></canvas>
+            </div>
+            <div class="col">
+                <div class="row">
+                    Объекты
+                </div>
+                <div id="objects-ordering" class="objects-view">
+                </div>
             </div>
         </section>
     </main>
