@@ -51,6 +51,9 @@ class Editor {
         document.addEventListener('keyup', (e) => {
             const active = this.canvas.getActiveObject()
             if (e.key === 'Delete') {
+                if (ObjectsOreder.IsEditingObjId){
+                    return
+                }
                 if (active) {
                     if (active.type === 'activeSelection') {
                         const objs = active.getObjects()

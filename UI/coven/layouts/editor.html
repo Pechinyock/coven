@@ -16,7 +16,8 @@
     <script type="module" src="assets/js/editor/editor.js" defer></script>
     <script type="module" src="assets/js/editor/toolbar.js" defer></script>
     <script type="module" src="assets/js/editor/color.js" defer></script>
-    <script type="module" src="assets/js/editor/objects_ordering.js" defer></script>
+    <script type="module" src="assets/js/editor/objects_ordering.js"
+        defer></script>
 </head>
 
 <body>
@@ -68,7 +69,7 @@
                                 <div class="col">
                                     Ширина: <input type="range" min="0" max="10"
                                         value="0" id="toolbar-txt-stroke-width"
-                                        disabled>
+                                        step="0.1" disabled>
                                 </div>
                             </div>
                             <hr>
@@ -97,7 +98,9 @@
                 <div class="row">
                     Объекты
                 </div>
-                <div id="objects-ordering" class="objects-view">
+                <div class="row flex-nowrap overflow-hidden">
+                    <div id="objects-ordering" class="objects-view">
+                    </div>
                 </div>
             </div>
         </section>

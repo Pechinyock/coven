@@ -132,17 +132,6 @@ export class Toolbar {
             console.error('failed to bind text stroke color')
             return
         }
-        const strokeOpacity = document.getElementById(strokeOpacityId)
-        if (!strokeOpacity) {
-            console.error('failed to bind text stroke opacity')
-            return
-        }
-
-        const strokeWidth = document.getElementById(strokeOpacityWidthId)
-        if (!strokeWidth) {
-            console.error('failed to bind text stroke width')
-            return
-        }
 
         colorPicker.addEventListener('input', (e) => {
             const active = this.canvas.getActiveObject()
@@ -172,24 +161,13 @@ export class Toolbar {
 
             this.canvas.renderAll()
         })
+        colorPicker.disabled = false
 
-        strokeWidth.addEventListener('input', (e) => {
-            const active = this.canvas.getActiveObject()
-            if (!active) { return }
-            const size = parseInt(e.target.value)
-            if (active.type === 'activeSelection') {
-                const objs = active.getObjects()
-                objs.forEach(obj => {
-                    if (obj.type.includes('text')) {
-                        obj.set('strokeWidth', size)
-                    }
-                });
-            } else if (active.type.includes('text')) {
-                active.set('strokeWidth', size)
-            }
-
-            this.canvas.renderAll()
-        })
+        const strokeOpacity = document.getElementById(strokeOpacityId)
+        if (!strokeOpacity) {
+            console.error('failed to bind text stroke opacity')
+            return
+        }
 
         strokeOpacity.addEventListener('input', (e) => {
             const active = this.canvas.getActiveObject()
@@ -218,10 +196,32 @@ export class Toolbar {
 
             this.canvas.renderAll()
         })
-
-        strokeWidth.disabled = false
-        colorPicker.disabled = false
         strokeOpacity.disabled = false
+
+        const strokeWidth = document.getElementById(strokeOpacityWidthId)
+        if (!strokeWidth) {
+            console.error('failed to bind text stroke width')
+            return
+        }
+
+        strokeWidth.addEventListener('input', (e) => {
+            const active = this.canvas.getActiveObject()
+            if (!active) { return }
+            const size = parseFloat(e.target.value)
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (obj.type.includes('text')) {
+                        obj.set('strokeWidth', size)
+                    }
+                });
+            } else if (active.type.includes('text')) {
+                active.set('strokeWidth', size)
+            }
+
+            this.canvas.renderAll()
+        })
+        strokeWidth.disabled = false
 
         this.textStrokeColor = colorPicker
         this.textStrokeOpacity = strokeOpacity
@@ -236,7 +236,7 @@ export class Toolbar {
         const txt = new fabric.Textbox(text, {
             left: 50,
             top: 50,
-            width: 200,
+            width: 90,
             fontSize: this.textFontSize.value,
             fill: txtFillColor,
             stroke: strokeColor,

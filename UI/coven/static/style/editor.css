@@ -3,6 +3,13 @@
     height: 1000px;
 }
 
-.object-view-element{
+.object-view-element {
     cursor: pointer;
+}
+
+.object-view-element .object-label {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
