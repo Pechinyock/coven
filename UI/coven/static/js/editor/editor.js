@@ -7,7 +7,7 @@ class Editor {
         this.elementsIncrementer = this.canvas.size()
 
         this.setBgColor('#ffffffff')
-        this.setSize(1000, 800)
+        this.setSize(600, 800)
         this.initToolbar()
         this.initCanvasEvents()
         this.initKeyEvents()
