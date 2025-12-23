@@ -8,12 +8,13 @@
 - [ ] "main" layout loads all css from card-styles dir
 
 # TURN 360 AGAIN
-- [ ] Now use fabric.js
-- [ ] canvas size is wierd...
-- [ ] create tool bar
-    - [ ] add text
+- [X] Now use fabric.js
+- [X] canvas size is wierd...
+- [X] create tool bar
+    - [X] add text
         - [ ] custom fonts
     - [ ] add image
+    - [ ] add rect, cicrle some geometry...
 - [ ] templates using fabric
 - [ ] editor
     - [ ] POST - new card

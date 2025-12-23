@@ -18,10 +18,23 @@
     <script type="module" src="assets/js/editor/color.js" defer></script>
     <script type="module" src="assets/js/editor/objects_ordering.js"
         defer></script>
+    <script type="module" src="assets/js/editor/control_menu.js" defer></script>
 </head>
 
 <body>
+    <form id="save-result-form" hx-post="/card" hx-trigger="saveCanvasEvent"
+        hx-swap="none" style="display: none;">
+        <input type="hidden" name="cardType" id="cardType" value="characters"/>
+        <input type="hidden" name="dataType" id="dataType" />
+        <input type="hidden" name="data" id="data" />
+    </form>
     <main class="container-fluid mt-4">
+        <section class="row">
+            <div class="col-1">
+                <button class="btn btn-primary" id="save-result-btn"
+                    disabled>Сохранить</button>
+            </div>
+        </section>
         <section class="row">
             <div class="col-3">
                 <div class="accordion accordion-flush mt-4">

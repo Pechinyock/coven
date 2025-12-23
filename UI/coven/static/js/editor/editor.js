@@ -1,5 +1,6 @@
 import { Toolbar } from "./toolbar.js";
 import { ObjectsOreder } from "./objects_ordering.js";
+import { ControlMenu } from "./control_menu.js";
 
 class Editor {
     constructor(canvasId) {
@@ -8,10 +9,11 @@ class Editor {
 
         this.setBgColor('#ffffffff')
         this.setSize(600, 800)
-        this.initToolbar()
-        this.initCanvasEvents()
-        this.initKeyEvents()
-        this.initObjectOrdering()
+        this._initToolbar()
+        this._initCanvasEvents()
+        this._initKeyEvents()
+        this._initObjectOrdering()
+        this._initControlMenu()
     }
 
     setBgColor(color) {
@@ -27,7 +29,7 @@ class Editor {
         this.canvas.renderAll();
     }
 
-    initToolbar() {
+    _initToolbar() {
         const toolbar = new Toolbar(this.canvas)
         toolbar.bindAddText('toolbar-add-txt')
         toolbar.bindColorPicker('toolbar-txt-color', 'toolbar-txt-opacity')
@@ -36,22 +38,27 @@ class Editor {
         this.toolbar = toolbar
     }
 
-    initObjectOrdering(ordering) {
+    _initObjectOrdering() {
         this.objectOrdering = new ObjectsOreder(this.canvas)
     }
 
-    initCanvasEvents() {
+    _initCanvasEvents() {
         this.canvas.on('object:added', (e) => {
             const newElementId = `${e.target.type}_${this.elementsIncrementer++}`
             e.target.set('id', newElementId)
         })
     }
 
-    initKeyEvents() {
+    _initControlMenu() {
+        this.controlMenu = new ControlMenu(this.canvas)
+        this.controlMenu.bindSaveButton('save-result-btn')
+    }
+
+    _initKeyEvents() {
         document.addEventListener('keyup', (e) => {
             const active = this.canvas.getActiveObject()
             if (e.key === 'Delete') {
-                if (ObjectsOreder.IsEditingObjId){
+                if (ObjectsOreder.IsEditingObjId) {
                     return
                 }
                 if (active) {
