@@ -22,17 +22,12 @@
 </head>
 
 <body>
-    <form id="save-result-form" hx-post="/card" hx-trigger="saveCanvasEvent"
-        hx-swap="none" style="display: none;">
-        <input type="hidden" name="cardType" id="cardType" value="characters"/>
-        <input type="hidden" name="dataType" id="dataType" />
-        <input type="hidden" name="data" id="data" />
-    </form>
     <main class="container-fluid mt-4">
         <section class="row">
             <div class="col-1">
-                <button class="btn btn-primary" id="save-result-btn"
-                    disabled>Сохранить</button>
+                <button class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#modal"
+                    class="btn btn-primary">Сохранить</button>
             </div>
         </section>
         <section class="row">
@@ -120,6 +115,36 @@
             </div>
         </section>
     </main>
+
+    <div class="modal fade modal-lg" id="modal" data-bs-backdrop="static"
+        tabindex="-1" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"></h1>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="container">
+                    <div hx-get="/ui/card-types" hx-target="#card-types"
+                        hx-swap="innerHTML" hx-trigger="load">
+                    </div>
+                    <div class="row">
+                        <div class="col-12" id="card-types"></div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-12 d-flex justify-content-end">
+                            <button class="btn btn-primary w-100"
+                                data-bs-toggle="modal" data-bs-target="#modal"
+                                class="btn btn-primary" id="save-result-btn"
+                                disabled>Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>

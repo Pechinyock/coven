@@ -9,9 +9,6 @@ import (
 	"strings"
 )
 
-/*[LAME] HARDCODE */
-const baseUriPath = "image-pool"
-
 func loadImagesPrewiewData(poolGroupName string) ([]projection.ImageProj, error) {
 	if poolGroupName == "" {
 		return nil, errors.New("pool group name is empty")

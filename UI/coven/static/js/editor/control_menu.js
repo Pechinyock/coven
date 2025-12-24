@@ -45,7 +45,7 @@ export class ControlMenu {
         form.dispatchEvent(new Event('saveCanvasEvent'))
 
         dataTypeInput.value = 'json'
-        const json = JSON.stringify(this.canvas.toJSON())
+        const json = JSON.stringify(this.canvas.toJSON(['id']))
         dataIntput.value = json
         form.dispatchEvent(new Event('saveCanvasEvent'))
     }

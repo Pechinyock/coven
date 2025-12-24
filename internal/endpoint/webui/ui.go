@@ -3,13 +3,13 @@ package webui
 import (
 	"coven/internal/cards"
 	"coven/internal/endpoint"
+	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/projection"
 	"coven/internal/ui"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"path"
-	"reflect"
 	"strings"
 )
 
@@ -98,38 +98,6 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			},
 		},
 		{
-			Path:    path.Join(UIPrefix, "create-card-from"),
-			Methods: []string{"GET"},
-			Secure:  true,
-			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				cardType := r.FormValue("create-card-group")
-				cardTypeLower := strings.ToLower(cardType)
-				_, isExists := cards.CardTypes[cardTypeLower]
-				if !isExists {
-					slog.Error("failed to render card create form: unknown type", "provided type", cardType)
-					w.WriteHeader(http.StatusNotFound)
-				}
-
-				switch cardTypeLower {
-				case "characters":
-					uiBundle.Render("create_character", w, nil)
-				case "spells":
-					w.Write([]byte("unimplemented spells"))
-				case "secrets":
-					w.Write([]byte("unimplemented secrets"))
-				case "curses":
-					w.Write([]byte("unimplemented curses"))
-				case "ingredients":
-					w.Write([]byte("unimplemented ingredients"))
-				case "potions":
-					w.Write([]byte("unimplemented potions"))
-				default:
-					slog.Error("unknown card type", "type", cardTypeLower)
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			},
-		},
-		{
 			Path:    path.Join(UIPrefix, "image-pool", "{poolName}"),
 			Methods: []string{"GET"},
 			Secure:  true,
@@ -158,6 +126,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 					w.Write([]byte("Картинки данного типа еще не загружены"))
 					return
 				}
+				baseUriPath := shareddirs.ImagePoolDirPath.Uri
 				poolView := projection.ImageViewProj{
 					BasePath:  baseUriPath,
 					FileGroup: poolNameLower,
@@ -196,17 +165,17 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
 				chapterName := r.PathValue("chapterName")
-				chapterData, err := getChapterCardsData(chapterName)
-				if err != nil {
-					SendFailed(w, err.Error())
-					return
-				}
-				if chapterData != nil && reflect.ValueOf(chapterData).IsNil() {
-					SendFailed(w, "таких карт ещё нет")
-					return
+				/*[TODO] here we need to load properly*/
+				imgPath := path.Join(shareddirs.CompleteCardsDirPath.Uri, chapterName, "new_file.png")
+				tmpSlice := []string{imgPath}
+				tmp := struct {
+					Cards []string
+				}{
+					Cards: tmpSlice,
 				}
 				chapterName = fmt.Sprintf("chapter_%s", chapterName)
-				err = uiBundle.Render(chapterName, w, chapterData)
+				w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+				err := uiBundle.Render(chapterName, w, tmp)
 				if err != nil {
 					SendFailed(w, err.Error())
 					return
@@ -246,6 +215,13 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods:     []string{"GET"},
 			Secure:      true,
 			HandlerFunc: loadEditorFunc,
+		},
+		{
+			Path:    "/ui/card-types",
+			Methods: []string{"GET"},
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				uiBundle.Render("card_types_selection", w, cards.CardTypes)
+			},
 		},
 	}
 }

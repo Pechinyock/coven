@@ -21,15 +21,6 @@ var CardTypes = map[string]string{
 	"potions":     "Зелье",
 }
 
-var typeTemplPath = map[string]string{
-	"characters":  "character_card",
-	"spells":      "",
-	"secrets":     "",
-	"curses":      "",
-	"ingredients": "",
-	"potions":     "",
-}
-
 func GenerateCard(cardType, cardName, outputPath, templatesPath string, data any) error {
 	if cardName == "" {
 		return errors.New("card name could't be empty string")
