@@ -174,7 +174,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 					return
 				}
 				pathToCards := path.Join(shareddirs.CompleteCardsDirPath.Path, chapterName)
-				fileNames, err := cards.GetCardsFileNames(pathToCards, "png")
+				fileNames, err := cards.GetCardFileNames(pathToCards, "png")
 				if err != nil {
 					SendFailed(w, fmt.Sprintf("при загрузке карт %s произошла ошибка сервера", chapterName))
 					slog.Error("failed to load card file names", "card type name", chapterName)
@@ -186,16 +186,24 @@ func GetUIEndpoints() []endpoint.Endpoint {
 					w.WriteHeader(http.StatusNoContent)
 					return
 				}
-				uriPaths := make([]string, len(fileNames))
+
+				cardProjs := make([]projection.CompleteCardProj, len(fileNames))
 				uriRoot := path.Join(shareddirs.CompleteCardsDirPath.Uri, chapterName)
 				for i, c := range fileNames {
-					uriPaths[i] = path.Join(uriRoot, c)
+					cutName, _, found := strings.Cut(c, ".")
+					cardProjs[i].Type = chapterName
+					if found {
+						cardProjs[i].Name = cutName
+					} else {
+						slog.Error("failed to get complete card name after cutting file name")
+					}
+					cardProjs[i].Uri = path.Join(uriRoot, c)
 				}
 
 				tmp := struct {
-					Cards []string
+					Cards []projection.CompleteCardProj
 				}{
-					Cards: uriPaths,
+					Cards: cardProjs,
 				}
 				w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 				err = UIBundle.Render("complete_cards_chapter", w, tmp)
