@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -74,4 +75,21 @@ func CreateDirIfNotExists(path string) error {
 		}
 	}
 	return nil
+}
+
+func IsInValidLenghtRange(s string) bool {
+	return len(s) > 0 && len(s) <= 247
+}
+
+func IsValidFileName(s string) bool {
+	if !IsInValidLenghtRange(s) {
+		return false
+	}
+	re := regexp.MustCompile(`[\\/:*?"<>|]`)
+	return !re.MatchString(s)
+}
+
+func ReplaceAllSpaces(s string) string {
+	re := regexp.MustCompile(`\s+`)
+	return re.ReplaceAllString(s, "_")
 }

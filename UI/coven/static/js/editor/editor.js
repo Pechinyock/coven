@@ -81,3 +81,4 @@ class Editor {
 }
 
 const editor = new Editor('card-canvas')
+window.editor = editor

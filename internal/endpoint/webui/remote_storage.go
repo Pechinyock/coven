@@ -13,7 +13,7 @@ func getChanges(w http.ResponseWriter) {
 		SendFailed(w, fmt.Sprintf("failed to check data: %s", err.Error()))
 		return
 	}
-	uiBundle.Render("storage_status", w, gitStatusOutput)
+	UIBundle.Render("storage_status", w, gitStatusOutput)
 }
 
 func postChanges(w http.ResponseWriter) {

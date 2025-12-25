@@ -116,6 +116,14 @@
         </section>
     </main>
 
+    <form id="save-result-form" hx-post="/card" hx-trigger="saveCanvasEvent"
+        hx-swap="innerHTML" hx-target="#save-response" style="display: none;">
+        <input type="hidden" name="cardType" id="cardType" />
+        <input type="hidden" name="cardName" id="cardName">
+        <input type="hidden" name="dataType" id="dataType" />
+        <input type="hidden" name="data" id="data" />
+    </form>
+
     <div class="modal fade modal-lg" id="modal" data-bs-backdrop="static"
         tabindex="-1" aria-hidden="false">
         <div class="modal-dialog">
@@ -132,12 +140,20 @@
                     <div class="row">
                         <div class="col-12" id="card-types"></div>
                     </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="name-proxy-control">Название</label>
+                            <input class="form-control" type="text"
+                                hx-on:change="document.getElementById('cardName').value = this.value"
+                                id="name-proxy-control" required>
+                        </div>
+                    </div>
                     <div class="row my-2">
                         <div class="col-12 d-flex justify-content-end">
                             <button class="btn btn-primary w-100"
-                                data-bs-toggle="modal" data-bs-target="#modal"
-                                class="btn btn-primary" id="save-result-btn"
-                                disabled>Сохранить</button>
+                                id="save-result-btn" disabled>Сохранить</button>
+                        </div>
+                        <div id="save-response" class="col-12 mt-2">
                         </div>
                     </div>
                 </div>

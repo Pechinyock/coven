@@ -11,7 +11,7 @@ var modalsMap = map[string]func(string, http.ResponseWriter){
 }
 
 func addImageModal(templName string, w http.ResponseWriter) {
-	err := uiBundle.Render(templName, w, cards.CardTypes)
+	err := UIBundle.Render(templName, w, cards.CardTypes)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -19,7 +19,7 @@ func addImageModal(templName string, w http.ResponseWriter) {
 }
 
 func remoteStorageModal(templName string, w http.ResponseWriter) {
-	err := uiBundle.Render(templName, w, nil)
+	err := UIBundle.Render(templName, w, nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
