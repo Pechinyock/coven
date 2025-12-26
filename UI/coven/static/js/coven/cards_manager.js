@@ -5,6 +5,43 @@ export class CardsManager {
                 this._updateCardsView()
             }
         })
+
+        this.deleteTimeGap = null
+    }
+
+    openEditor(btn) {
+        const cardType = btn.dataset.cardType
+        if (!cardType) {
+            console.error('failed to open editor for specific card, card type not found')
+            return
+        }
+        const cardName = btn.dataset.name
+        if (!cardName) {
+            console.error('failed to open editor for specific card, card name not found')
+            return
+        }
+        const url = `/editor?type=${encodeURIComponent(cardType)}&name=${encodeURIComponent(cardName)}`
+        window.open(url, `${cardType} ${cardName}`)
+    }
+
+    startDeleteHold(btn) {
+        if (this.deleteTimeGap) {
+            console.warn('how does it even possible???')
+            return
+        }
+        btn.classList.add('holding')
+        const waitUntillDeleteMs = 1000
+        this.deleteTimeGap = setTimeout(() => {
+            this.deleteCard(btn)
+        }, waitUntillDeleteMs)
+    }
+
+    cancelDeleteHold(btn) {
+        if (this.deleteTimeGap) {
+            clearTimeout(this.deleteTimeGap)
+            this.deleteTimeGap = null
+        }
+        btn.classList.remove('holding')
     }
 
     deleteCard(delBtn) {
@@ -23,26 +60,31 @@ export class CardsManager {
             console.error('failed to delete card del card name input not found')
             return
         }
-        const cardViewElem = delBtn.parentElement
-        if (!cardViewElem) {
-            console.error('failed to delete card delBtn parent not found')
-            return
-        }
-        const cardName = cardViewElem.dataset.name
+        const cardName = delBtn.dataset.name
         if (!cardName || cardName === '') {
             console.error('failed to delete card, card name is empty')
             return
         }
-        const cardType = cardViewElem.dataset.cardType
+        const cardType = delBtn.dataset.cardType
         if (!cardType || cardType === '') {
             console.error('failed to delete card, card type is empty')
             return
         }
 
+        const cardViewElem = document.getElementById(`card-${cardType}-${cardName}`)
+        if (!cardViewElem) {
+            console.error('failed to delete card delBtn parent not found')
+            return
+        }
+
         delCardNameInput.value = cardName
         delCardTypeInput.value = cardType
-        
+
         delForm.dispatchEvent(new Event('deleteCardEvent'))
+        if (this.deleteTimeGap) {
+            clearTimeout(this.deleteTimeGap)
+            this.deleteTimeGap = null
+        }
         cardViewElem.remove()
     }
 

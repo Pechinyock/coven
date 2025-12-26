@@ -55,7 +55,9 @@ export class ControlMenu {
             console.error('failed to override data input dataIntputOverride not found')
             return
         }
-
+        overrideForm.addEventListener('overrideCardEvent', () => {
+            console.log('dispatched')
+        })
         dataTypeInputOverride.value = 'png'
         const dataAsURL = this.canvas.toDataURL('png')
         const base64Data = dataAsURL.split(',')[1]
@@ -70,19 +72,19 @@ export class ControlMenu {
 
     savingCardTypeChanged(radio) {
         const cardType = document.getElementById('cardType')
-        if (!cardType){
+        if (!cardType) {
             console.error('failed to get card type')
             return
         }
         cardType.value = radio.value
         const overrideBtn = document.getElementById('overrideCardBtn')
-        if (!overrideBtn){
+        if (!overrideBtn) {
             return
         }
         overrideBtn.remove()
     }
 
-    _saveCanvas() { 
+    _saveCanvas() {
         const form = document.getElementById('save-result-form');
         if (!form) {
             console.error('failed to save form not found')

@@ -8,7 +8,10 @@ export class ObjectsOreder {
             console.error('failed to init layer objects-ordering')
             return
         }
+        const objs = canvas.getObjects()
+        if (objs && objs.size > 0) {
 
+        }
         canvas.on('object:added', (e) => {
             const id = e.target.get('id')
             if (!id) {

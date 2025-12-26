@@ -41,6 +41,34 @@ nav ul {
     background-color: #438effb2;
 }
 
+.delete-hold-btn {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 0.3s;
+    border: 1px solid #dc3545;
+}
+
+.delete-hold-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: #dc3545;
+    transition: width 1s linear;
+    z-index: -1;
+}
+
+.delete-hold-btn.holding {
+    border-color: #dc3545;
+}
+
+.delete-hold-btn.holding::before {
+    width: 100%;
+}
+
 /** FONTS */
 
 /* Montserrat-regular */

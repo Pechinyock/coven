@@ -1,5 +1,5 @@
 <form id="override-result-form" hx-patch="/card" hx-trigger="overrideCardEvent"
-    hx-swap="innerHTML" hx-target="#save-response" style="display: none;">
+    hx-swap="innerHTML" hx-target="#save-response" hx-sync="this:queue first" style="display: none;">
     <input type="hidden" name="cardType" id="cardTypeOverride" />
     <input type="hidden" name="cardName" id="cardNameOverride">
     <input type="hidden" name="dataType" id="dataTypeOverride" />

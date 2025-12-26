@@ -4,7 +4,6 @@ import (
 	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/utils"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -19,30 +18,6 @@ var CardTypes = map[string]string{
 	"curses":      "Проклятье",
 	"ingredients": "Ингредиент",
 	"potions":     "Зелье",
-}
-
-func GenerateCard(cardType, cardName, outputPath, templatesPath string, data any) error {
-	if cardName == "" {
-		return errors.New("card name could't be empty string")
-	}
-	jsonOutDir := shareddirs.CardsJsonDataDirPath.Path
-	return saveCardData(jsonOutDir, cardType, cardName, data)
-}
-
-func saveCardData(cardDataDirPath, cardType, cardName string, data any) error {
-	pathToTypeDir := path.Join(cardDataDirPath, cardType)
-	if !utils.IsDirExists(pathToTypeDir) {
-		if err := os.MkdirAll(pathToTypeDir, 0755); err != nil {
-			return err
-		}
-	}
-	jsonBytes, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return err
-	}
-	filename := fmt.Sprintf("%s.json", cardName)
-	saveToPath := filepath.Join(pathToTypeDir, filename)
-	return os.WriteFile(saveToPath, jsonBytes, 0644)
 }
 
 func IsCardExists(cardType, cardName string) (bool, error) {
@@ -121,6 +96,21 @@ func DeleteCard(cardType, cardName string) error {
 		return err
 	}
 	return nil
+}
+
+func LoadCardJsonData(cardType, cardName string) ([]byte, error) {
+	pathToJson := path.Join(shareddirs.CardsJsonDataDirPath.Path,
+		cardType,
+		fmt.Sprintf("%s.json", cardName),
+	)
+	if !utils.IsFileExists(pathToJson) {
+		return nil, fmt.Errorf("file not found: %s", pathToJson)
+	}
+	data, err := os.ReadFile(pathToJson)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func saveJson(cardType, cardName, data string) error {

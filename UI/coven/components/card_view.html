@@ -1,6 +1,23 @@
-<div class="card" data-name="{{.Name}}" data-card-type="{{.Type}}">
+<div class="card" id="card-{{.Type}}-{{.Name}}">
     <img src="{{.Uri}}">
-    <button class="btn btn-danger" onclick="cardsManager.deleteCard(this)">
-        <i class="bi bi-trash"></i>
-    </button>
+    <div class="container">
+        <div class="row my-1 me-3 d-flex justify-content-center">
+            <div class="col-1">
+                <button class="btn btn-sm delete-hold-btn" data-name="{{.Name}}"
+                    data-card-type="{{.Type}}"
+                    onmousedown="cardsManager.startDeleteHold(this)"
+                    onmouseleave="cardsManager.cancelDeleteHold(this)"
+                    onmouseup="cardsManager.cancelDeleteHold(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+            <div class="col-1 mx-2">
+                <button class="btn btn-sm btn-outline-primary"
+                    data-name="{{.Name}}" data-card-type="{{.Type}}"
+                    onclick="cardsManager.openEditor(this)">
+                    <i class="bi bi-pencil"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

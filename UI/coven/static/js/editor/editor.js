@@ -14,6 +14,25 @@ class Editor {
         this._initKeyEvents()
         this._initObjectOrdering()
         this._initControlMenu()
+
+        const urlParams = new URLSearchParams(window.location.search)
+        if (!urlParams || urlParams.size === 0) {
+            console.log('no params provided')
+            return
+        }
+        const edtCardType = urlParams.get('type')
+        if (!edtCardType) {
+            console.error('parameters provided, type not found')
+            return
+        }
+        this.editingCardType = edtCardType
+        const edtCardName = urlParams.get('name')
+        if (!edtCardName) {
+            console.error('parameters provided, name not found')
+            return
+        }
+        this.editingCardName = edtCardName
+        window.addEventListener('DOMContentLoaded', async () => await this._loadCard(edtCardType, edtCardName))
     }
 
     setBgColor(color) {
@@ -27,6 +46,24 @@ class Editor {
         this.canvas.setWidth(width)
         this.canvas.setHeight(height)
         this.canvas.renderAll();
+    }
+
+    async _loadCard(type, name) {
+        try {
+            const response = await fetch(`/card?cardType=${type}&cardName=${name}`)
+            const editingData = await response.json()
+
+            this.canvas.loadFromJSON(editingData, () => {
+                this.canvas.renderAll();
+            }, (jsonObj, fabricObj) => {
+                if (jsonObj.id) {
+                    fabricObj.set('id', jsonObj.id)
+                }
+                return fabricObj;
+            })
+        } catch (error) {
+            console.error(`failed to fetch data for ${type} ${name}`, error)
+        }
     }
 
     _initToolbar() {
@@ -45,7 +82,10 @@ class Editor {
     _initCanvasEvents() {
         this.canvas.on('object:added', (e) => {
             const newElementId = `${e.target.type}_${this.elementsIncrementer++}`
-            e.target.set('id', newElementId)
+            const currentId = e.target.get('id')
+            if (!currentId) {
+                e.target.set('id', newElementId)
+            }
         })
     }
 

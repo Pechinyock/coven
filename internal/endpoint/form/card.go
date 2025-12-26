@@ -13,7 +13,39 @@ import (
 
 func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case "POST":
+	case http.MethodGet:
+		{
+			cardType := r.URL.Query().Get("cardType")
+			if cardType == "" {
+				slog.Error("failed to load json card data, card type is empty")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			cardName := r.URL.Query().Get("cardName")
+			if cardName == "" {
+				slog.Error("failed to load json card data, card name is empty")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			data, err := cards.LoadCardJsonData(cardType, cardName)
+			if err != nil {
+				slog.Error("failed to load card json data",
+					"card name", cardName,
+					"card type", cardType,
+					"error message", err.Error(),
+				)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			if len(data) == 0 {
+				slog.Error("failed to load card json data, data is empty")
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(data)
+		}
+	case http.MethodPost:
 		{
 			cardType := r.FormValue("cardType")
 			if len(cardType) == 0 {
@@ -56,7 +88,7 @@ func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 			}
 			webui.SendSucces(w, fmt.Sprintf("Карта успешно %q создана", name))
 		}
-	case "PATCH":
+	case http.MethodPatch:
 		{
 			cardType := r.FormValue("cardType")
 			if len(cardType) == 0 {
@@ -98,7 +130,7 @@ func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 			}
 			webui.SendSucces(w, fmt.Sprintf("Карта успешно %q перезаписана", name))
 		}
-	case "DELETE":
+	case http.MethodDelete:
 		{
 			body, err := io.ReadAll(r.Body)
 			if err != nil {
