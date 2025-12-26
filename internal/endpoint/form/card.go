@@ -53,8 +53,18 @@ func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			dataFormat := r.FormValue("dataType")
-			data := r.FormValue("data")
+			jsonCardData := r.FormValue("jsonData")
+			if jsonCardData == "" {
+				webui.SendFailed(w, "json не может быть пустым")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			pngCardData := r.FormValue("pngData")
+			if pngCardData == "" {
+				webui.SendFailed(w, "png не может быть пустым")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
 			name := r.FormValue("cardName")
 			if !utils.IsInValidLenghtRange(name) {
 				webui.SendFailed(w, "Название не может быть пустым или содержать больше 247 символов")
@@ -80,9 +90,15 @@ func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusConflict)
 				return
 			}
-			err = cards.SaveCard(cardType, completeName, dataFormat, data)
+			err = cards.SaveCard(cardType, completeName, "json", jsonCardData)
 			if err != nil {
-				webui.SendFailed(w, fmt.Sprintf("failed to save card %s", err.Error()))
+				webui.SendFailed(w, fmt.Sprintf("failed to save json card data %s", err.Error()))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			err = cards.SaveCard(cardType, completeName, "png", pngCardData)
+			if err != nil {
+				webui.SendFailed(w, fmt.Sprintf("failed to save png card data %s", err.Error()))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -96,8 +112,18 @@ func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			dataFormat := r.FormValue("dataType")
-			data := r.FormValue("data")
+			jsonCardData := r.FormValue("jsonData")
+			if jsonCardData == "" {
+				webui.SendFailed(w, "json не может быть пустым")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			pngCardData := r.FormValue("pngData")
+			if pngCardData == "" {
+				webui.SendFailed(w, "png не может быть пустым")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
 			name := r.FormValue("cardName")
 			if !utils.IsInValidLenghtRange(name) {
 				webui.SendFailed(w, "Название не может быть пустым или содержать больше 247 символов")
@@ -122,7 +148,13 @@ func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusConflict)
 				return
 			}
-			err = cards.SaveCard(cardType, completeName, dataFormat, data)
+			err = cards.SaveCard(cardType, completeName, "json", jsonCardData)
+			if err != nil {
+				webui.SendFailed(w, fmt.Sprintf("failed to save card %s", err.Error()))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			err = cards.SaveCard(cardType, completeName, "png", pngCardData)
 			if err != nil {
 				webui.SendFailed(w, fmt.Sprintf("failed to save card %s", err.Error()))
 				w.WriteHeader(http.StatusInternalServerError)

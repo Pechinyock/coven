@@ -18,9 +18,9 @@ export class ControlMenu {
     }
 
     overrideCard() {
-        const overrideForm = document.getElementById('override-result-form')
-        if (!overrideForm) {
-            console.error('failed to get override form')
+        const form = document.getElementById('save-result-form');
+        if (!form) {
+            console.error('failed to override form not found')
             return
         }
         const cardTypeInput = document.getElementById('cardType')
@@ -30,44 +30,40 @@ export class ControlMenu {
         }
         const cardNameInput = document.getElementById('cardName')
         if (!cardNameInput) {
-            console.error('failed to override data cardName input not found')
+            console.error('failed to override data input cardNameInput not found')
             return
         }
-        const cardNameInputOverride = document.getElementById('cardNameOverride')
-        if (!cardNameInput) {
-            console.error('failed to override data cardName input not found')
+        const jsonDataInput = document.getElementById('jsonData')
+        if (!jsonDataInput) {
+            console.error('failed to override data input jsonDataInput not found')
             return
         }
-        cardNameInputOverride.value = cardNameInput.value
-        const cardTypeInputOverride = document.getElementById('cardTypeOverride')
-        if (!cardTypeInput) {
-            console.error('failed to override data input cardType not found')
+        const pngDataInput = document.getElementById('pngData')
+        if (!pngDataInput) {
+            console.error('failed to override data input pngDataInput not found')
             return
         }
-        cardTypeInputOverride.value = cardTypeInput.value
-        const dataTypeInputOverride = document.getElementById('dataTypeOverride')
-        if (!dataTypeInputOverride) {
-            console.error('failed to override data input cardTypeInput not found')
+        if (!pngDataInput.value) {
+            console.error('failed to override data input pngDataInput has no value')
             return
         }
-        const dataIntputOverride = document.getElementById('dataOverride')
-        if (!dataIntputOverride) {
-            console.error('failed to override data input dataIntputOverride not found')
+        if (!jsonDataInput.value) {
+            console.error('failed to override data input jsonDataInput has no value')
             return
         }
-        overrideForm.addEventListener('overrideCardEvent', () => {
-            console.log('dispatched')
-        })
-        dataTypeInputOverride.value = 'png'
-        const dataAsURL = this.canvas.toDataURL('png')
-        const base64Data = dataAsURL.split(',')[1]
-        dataIntputOverride.value = base64Data
-        overrideForm.dispatchEvent(new Event('overrideCardEvent'))
 
-        dataTypeInputOverride.value = 'json'
-        const json = JSON.stringify(this.canvas.toJSON(['id']))
-        dataIntputOverride.value = json
-        overrideForm.dispatchEvent(new Event('overrideCardEvent'))
+        const data = {
+            cardType: cardTypeInput.value,
+            cardName: cardNameInput.value,
+            jsonData: jsonDataInput.value,
+            pngData: pngDataInput.value
+        }
+
+        htmx.ajax('PATCH', '/card', {
+            values: data,
+            target: '#save-response',
+            swap: 'innerHTML'
+        })
     }
 
     savingCardTypeChanged(radio) {
@@ -95,25 +91,24 @@ export class ControlMenu {
             console.error('failed to save data input cardType not found')
             return
         }
-        const dataTypeInput = document.getElementById('dataType')
-        if (!cardTypeInput) {
-            console.error('failed to save data input cardType not found')
+        const jsonDataInput = document.getElementById('jsonData')
+        if (!jsonDataInput) {
+            console.error('failed to save data input jsonDataInput not found')
             return
         }
-        const dataIntput = document.getElementById('data')
-        if (!cardTypeInput) {
-            console.error('failed to save data input cardType not found')
+        const pngDataInput = document.getElementById('pngData')
+        if (!pngDataInput) {
+            console.error('failed to save data input pngDataInput not found')
             return
         }
-        dataTypeInput.value = 'png'
+
         const dataAsURL = this.canvas.toDataURL('png')
         const base64Data = dataAsURL.split(',')[1]
-        dataIntput.value = base64Data
-        form.dispatchEvent(new Event('saveCanvasEvent'))
-
-        dataTypeInput.value = 'json'
         const json = JSON.stringify(this.canvas.toJSON(['id']))
-        dataIntput.value = json
+
+        jsonDataInput.value = json
+        pngDataInput.value = base64Data
+
         form.dispatchEvent(new Event('saveCanvasEvent'))
     }
 }

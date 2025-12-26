@@ -1,11 +1,3 @@
-<form id="override-result-form" hx-patch="/card" hx-trigger="overrideCardEvent"
-    hx-swap="innerHTML" hx-target="#save-response" hx-sync="this:queue first" style="display: none;">
-    <input type="hidden" name="cardType" id="cardTypeOverride" />
-    <input type="hidden" name="cardName" id="cardNameOverride">
-    <input type="hidden" name="dataType" id="dataTypeOverride" />
-    <input type="hidden" name="data" id="dataOverride" />
-</form>
-
 <button id="overrideCardBtn" class="btn btn-warning w-100"
     onclick="editor.controlMenu.overrideCard()">
     Перезаписать

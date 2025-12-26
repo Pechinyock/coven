@@ -32,7 +32,11 @@ class Editor {
             return
         }
         this.editingCardName = edtCardName
-        window.addEventListener('DOMContentLoaded', async () => await this._loadCard(edtCardType, edtCardName))
+        window.addEventListener('DOMContentLoaded', async () => {
+            await this._loadCard(edtCardType, edtCardName)
+            this._setCardTypeSelected(edtCardType)
+            this._setCardName(edtCardName)
+        })
     }
 
     setBgColor(color) {
@@ -64,6 +68,46 @@ class Editor {
         } catch (error) {
             console.error(`failed to fetch data for ${type} ${name}`, error)
         }
+    }
+
+    _setCardName(name) {
+        const saveForm = document.getElementById('save-result-form')
+        if (!saveForm){
+            console.error('failed to set editing card name, save result form not found')
+            return
+        }
+        const cardNameInput = document.getElementById('cardName')
+        if (!cardNameInput){
+            console.error('failed to set editing card name cardName input not found')
+            return
+        }
+        cardNameInput.value = name
+        const cardNameProxyInput = document.getElementById('name-proxy-control')
+        if (!cardNameInput){
+            console.error('failed to set editing card name name-proxy-control input not found')
+            return
+        }
+        cardNameProxyInput.value = name
+    }
+
+    _setCardTypeSelected(type) {
+        const typeSelector = document.getElementById('cards-type-selector')
+        if (!typeSelector) {
+            console.error('failed to set card type selector div not found')
+            return
+        }
+        const radios = typeSelector.querySelectorAll('input[type="radio"]')
+        if (!radios) {
+            console.error(`failed to set card type there's no any radio`)
+            return
+        }
+        radios.forEach(x => { x.checked = (x.value === type) })
+        const cardTypeInput = document.getElementById('cardType')
+        if (!cardTypeInput){
+            console.error('failed to set card type cardType not found')
+            return
+        }
+        cardTypeInput.value = type
     }
 
     _initToolbar() {

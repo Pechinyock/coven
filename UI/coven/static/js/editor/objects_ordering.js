@@ -210,7 +210,6 @@ export class ObjectsOreder {
                 .replace(/\n/g, '')
                 .trim()
                 .replace(/[^\w\s]/g, '')
-                .replace(/\s+/g, '_')
         }
         targetDiv.contentEditable = false
         targetDiv.classList.remove('form-control', 'form-control-sm')
