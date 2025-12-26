@@ -6,6 +6,7 @@ export class Toolbar {
             console.error('failed to initialze canvas toolbar: provided canvas is null')
             return
         }
+        this.fonts = ['Montserrat-regular', 'Tataric2_0', 'Deutsch Gothic Regular', 'Helmswald']
         this.canvas = canvas
     }
 
@@ -112,6 +113,43 @@ export class Toolbar {
         })
         fontSizeInput.disabled = false
         this.textFontSize = fontSizeInput
+    }
+
+    bindFontSelector(id) {
+        const selector = document.getElementById(id)
+        if (!selector) {
+            console.error('failed to get selector')
+            return
+        }
+        const fonts = this.fonts
+        fonts.forEach((font, index) => {
+            const option = document.createElement('option')
+            option.value = font
+            option.textContent = font
+            option.style.fontFamily = font
+            if (index === 0) {
+                option.selected = true
+            }
+            selector.appendChild(option)
+        })
+        selector.addEventListener('change', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) { return }
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (active.type.includes('text')) {
+                        return
+                    }
+                    obj.set('fontFamily', selector.value)
+                });
+                this.canvas.renderAll()
+            } else if (active.type.includes('text')) {
+                active.set('fontFamily', selector.value)
+                this.canvas.renderAll()
+            }
+        })
+        selector.disabled = false
     }
 
     bindAddText(id) {
@@ -233,6 +271,14 @@ export class Toolbar {
         const strokeWidth = parseInt(this.textStrokeWidth.value)
         const strokeOpacity = parseInt(this.textStrokeOpacity.value) / 100
         const strokeColor = FromHexToRGBA(this.textStrokeColor.value, strokeOpacity)
+        const selectedFont = document.getElementById('font-selector')
+        let font = null
+        if (!selectedFont) {
+            font = 'Montserrat-regular'
+            console.error('failed to find font selector')
+        } else {
+            font = selectedFont.value
+        }
         const txt = new fabric.Textbox(text, {
             left: 50,
             top: 50,
@@ -240,7 +286,8 @@ export class Toolbar {
             fontSize: this.textFontSize.value,
             fill: txtFillColor,
             stroke: strokeColor,
-            strokeWidth: strokeWidth
+            strokeWidth: strokeWidth,
+            fontFamily: font
         });
         this.canvas.add(txt)
     }

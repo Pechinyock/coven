@@ -107,3 +107,31 @@ nav ul {
     font-style: normal;
     font-display: swap;
 }
+
+/* Wierd symbols */
+@font-face {
+    font-family: 'Tataric2_0';
+    src: url('/assets/fonts/Tataric2_0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Deutsch Gothic Regular */
+@font-face {
+    font-family: 'Deutsch Gothic Regular';
+    src: url('/assets/fonts/Deutsch_Gothic_Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Helmswald */
+@font-face {
+    font-family: 'Helmswald';
+    src: url('/assets/fonts/Helmswald.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

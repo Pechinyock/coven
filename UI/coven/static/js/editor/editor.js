@@ -17,7 +17,6 @@ class Editor {
 
         const urlParams = new URLSearchParams(window.location.search)
         if (!urlParams || urlParams.size === 0) {
-            console.log('no params provided')
             return
         }
         const edtCardType = urlParams.get('type')
@@ -116,6 +115,7 @@ class Editor {
         toolbar.bindColorPicker('toolbar-txt-color', 'toolbar-txt-opacity')
         toolbar.bindFontSize('toolbar-txt-font-size')
         toolbar.bindTextStroke('toolbar-txt-stroke-color', 'toolbar-txt-stroke-opacity', 'toolbar-txt-stroke-width')
+        toolbar.bindFontSelector('font-selector')
         this.toolbar = toolbar
     }
 
