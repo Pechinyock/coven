@@ -14,11 +14,12 @@
     <script src="assets/js/lib/bootstrap.bundle.min.js" defer></script>
     <script src="assets/js/lib/fabric.js" defer></script>
     <script type="module" src="assets/js/editor/editor.js" defer></script>
-    <script type="module" src="assets/js/editor/toolbar.js" defer></script>
+    <script type="module" src="assets/js/editor/text_edit.js" defer></script>
     <script type="module" src="assets/js/editor/color.js" defer></script>
     <script type="module" src="assets/js/editor/objects_ordering.js"
         defer></script>
     <script type="module" src="assets/js/editor/control_menu.js" defer></script>
+    <script type="module" src="assets/js/editor/geometry.js" defer></script>
 </head>
 
 <body>
@@ -46,9 +47,39 @@
                             <div class="row">
                                 <div class="col">
                                     Шрифт:
-                                    <select id="font-selector" class="form-select" disabled>
+                                    <select id="font-selector"
+                                        class="form-select" disabled>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-1"></div>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtBoldBtn" data-bs-toggle="button"
+                                    aria-pressed="false" disabled>
+                                    <i class="bi bi-type-bold"></i>
+                                </button>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtItalicBtn" data-bs-toggle="button"
+                                    aria-pressed="false" disabled>
+                                    <i class="bi bi-type-italic"></i>
+                                </button>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtUnderlineBtn" data-bs-toggle="button"
+                                    aria-pressed="false" disabled>
+                                    <i class="bi bi-type-underline"></i>
+                                </button>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtStrikethroughBtn"
+                                    data-bs-toggle="button" aria-pressed="false"
+                                    disabled>
+                                    <i class="bi bi-type-strikethrough"></i>
+                                </button>
+                                <div class="col-1"></div>
                             </div>
                             <hr>
                             <div class="row">
@@ -102,6 +133,71 @@
                                 <button id="toolbar-add-txt"
                                     class="btn btn-primary" disabled>Новый
                                     текст</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-geometry">
+                            ГЕОМЕТРИЯ
+                        </button>
+                    </div>
+                    <div id="collapse-geometry"
+                        class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row mt-1">
+                                <div class="col-2"></div>
+                                <button id="createRectBtn" type="button"
+                                    class="col-2 btn btn-outline-primary btn-sm mx-2"
+                                    disabled>
+                                    <i class="bi bi-square"
+                                        style="color:whitesmoke;"></i>
+                                </button>
+                                <button id="createTriangleBtn" type="button"
+                                    class="col-2 btn btn-outline-primary btn-sm mx-2"
+                                    disabled>
+                                    <i class="bi bi-triangle"
+                                        style="color:whitesmoke;"></i>
+                                </button>
+                                <button id="createCircleBtn" type="button"
+                                    class="col-2 btn btn-outline-primary btn-sm mx-2"
+                                    disabled>
+                                    <i class="bi bi-circle"
+                                        style="color:whitesmoke;"></i>
+                                </button>
+                                <div class="col"></div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Заливка:
+                                    <input type="color" id="geometryFillColor"
+                                        disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Прозрачность: <input type="range" min="0"
+                                        max="100" value="100"
+                                        id="geometryFillTransparency" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Цвет обводки: <input type="color"
+                                        id="geometryStrokeColor" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Ширина обводки: <input type="range" min="0" max="100"
+                                        value="0" id="geometryStrokeWidth"
+                                        step="0.1" disabled>
+                                </div>
                             </div>
                         </div>
                     </div>

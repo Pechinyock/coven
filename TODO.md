@@ -12,14 +12,14 @@
 - [X] canvas size is wierd...
 - [X] create tool bar
     - [X] add text
-        - [ ] custom fonts
+        - [X] custom fonts
     - [ ] add image
     - [ ] add rect, cicrle some geometry...
 - [ ] templates using fabric
-- [ ] editor
-    - [ ] POST - new card
+- [X] editor
+    - [X] POST - new card
         [ ] save as template
-    - [ ] PATCH - edit existing
-- [ ] new card button
-    - [ ] comlpete new card
+    - [X] PATCH - edit existing
+- [X] new card button
+    - [X] comlpete new card
     - [ ] from template

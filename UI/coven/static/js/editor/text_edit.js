@@ -1,6 +1,6 @@
 import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity } from "./color.js"
 
-export class Toolbar {
+export class TextEdit {
     constructor(canvas) {
         if (!canvas) {
             console.error('failed to initialze canvas toolbar: provided canvas is null')
@@ -84,6 +84,225 @@ export class Toolbar {
 
         picker.disabled = false
         textOpacity.disabled = false
+    }
+
+    bindTextStyle() {
+        const boldBtn = txtBoldBtn
+        if (!boldBtn) {
+            console.error('failed to get bold text btn')
+            return
+        }
+        boldBtn.addEventListener('click', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) {
+                this._usrTxtStyleSelet.bold = this._getIsAreaPressed(boldBtn)
+                return
+            }
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (!obj.type.includes('text')) { return }
+                    const newValue = this._getIsAreaPressed(boldBtn) ? 'bold' : 'normal'
+                    obj.set('fontWeight', newValue)
+                });
+                boldBtn.classList.remove('mixed-state')
+            } else if (active.type.includes('text')) {
+                const newValue = this._getIsAreaPressed(boldBtn) ? 'bold' : 'normal'
+                active.set('fontWeight', newValue)
+            }
+            this.canvas.renderAll()
+        })
+
+        const italicBtn = txtItalicBtn
+        if (!italicBtn) {
+            console.error('failed to get italic text btn')
+            return
+        }
+        italicBtn.addEventListener('click', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) {
+                this._usrTxtStyleSelet.italic = this._getIsAreaPressed(italicBtn)
+                return
+            }
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (!obj.type.includes('text')) { return }
+                    const newValue = this._getIsAreaPressed(italicBtn) ? 'italic' : 'normal'
+                    obj.set('fontStyle', newValue)
+                });
+                italicBtn.classList.remove('mixed-state')
+            } else if (active.type.includes('text')) {
+                const newValue = this._getIsAreaPressed(italicBtn) ? 'italic' : 'normal'
+                active.set('fontStyle', newValue)
+            }
+            this.canvas.renderAll()
+        })
+
+        const underlineBtn = txtUnderlineBtn
+        if (!underlineBtn) {
+            console.error('failed to get underline text btn')
+            return
+        }
+        underlineBtn.addEventListener('click', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) {
+                this._usrTxtStyleSelet.underline = this._getIsAreaPressed(underlineBtn)
+                return
+            }
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (!obj.type.includes('text')) { return }
+                    const newValue = this._getIsAreaPressed(underlineBtn)
+                    obj.set('underline', newValue)
+                });
+                underlineBtn.classList.remove('mixed-state')
+            } else if (active.type.includes('text')) {
+                const newValue = this._getIsAreaPressed(underlineBtn)
+                active.set('underline', newValue)
+            }
+            this.canvas.renderAll()
+        })
+
+        const strikethroughBtn = txtStrikethroughBtn
+        if (!strikethroughBtn) {
+            console.error('failed to get strikethrough text btn')
+            return
+        }
+        strikethroughBtn.addEventListener('click', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) {
+                this._usrTxtStyleSelet.strikethrough = this._getIsAreaPressed(strikethroughBtn)
+                return
+            }
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (!obj.type.includes('text')) { return }
+                    const newValue = this._getIsAreaPressed(strikethroughBtn)
+                    obj.set('linethrough', newValue)
+                });
+                strikethroughBtn.classList.remove('mixed-state')
+            } else if (active.type.includes('text')) {
+                const newValue = this._getIsAreaPressed(strikethroughBtn)
+                active.set('linethrough', newValue)
+            }
+            this.canvas.renderAll()
+        })
+
+        this._usrTxtStyleSelet = {
+            bold: this._getIsAreaPressed(boldBtn),
+            italic: this._getIsAreaPressed(italicBtn),
+            underline: this._getIsAreaPressed(underlineBtn),
+            strikethrough: this._getIsAreaPressed(strikethroughBtn)
+        }
+
+        const selectionHandler = async (objects) => {
+            const txtObjs = objects.filter(obj => obj.type.includes('text'))
+            if (!txtObjs || txtObjs.length === 0) {
+                return
+            }
+            const isPropertyMixed = (propName) => {
+                if (txtObjs.length === 1) { return false }
+                const fstValue = txtObjs[0].get(propName)
+                for (let i = 1; i < txtObjs.length; ++i) {
+                    const propVal = txtObjs[i].get(propName)
+                    if (propVal !== fstValue) {
+                        return true
+                    }
+                }
+                return false
+            }
+
+            if (isPropertyMixed('fontStyle')) {
+                italicBtn.classList.add('mixed-state')
+            } else {
+                const isEnabledNow = this._getIsAreaPressed(italicBtn)
+                const isEnabledOnTargets = txtObjs[0].get('fontStyle') === 'italic' ? true : false
+                if (isEnabledNow !== isEnabledOnTargets) {
+                    await this._toggleButton(italicBtn)
+                }
+            }
+
+            if (isPropertyMixed('fontWeight')) {
+                boldBtn.classList.add('mixed-state')
+            } else {
+                const isEnabledNow = this._getIsAreaPressed(boldBtn)
+                const isEnabledOnTargets = txtObjs[0].get('fontWeight') === 'bold' ? true : false
+                if (isEnabledNow !== isEnabledOnTargets) {
+                    await this._toggleButton(boldBtn)
+                }
+            }
+
+            if (isPropertyMixed('underline')) {
+                underlineBtn.classList.add('mixed-state')
+            } else {
+                const isEnabledNow = this._getIsAreaPressed(underlineBtn)
+                const isEnabledOnTargets = txtObjs[0].get('underline')
+                if (isEnabledNow !== isEnabledOnTargets) {
+                    await this._toggleButton(underlineBtn)
+                }
+            }
+
+            if (isPropertyMixed('linethrough')) {
+                strikethroughBtn.classList.add('mixed-state')
+            } else {
+                const isEnabledNow = this._getIsAreaPressed(strikethroughBtn)
+                const isEnabledOnTargets = txtObjs[0].get('linethrough')
+                if (isEnabledNow !== isEnabledOnTargets) {
+                    await this._toggleButton(strikethroughBtn)
+                }
+            }
+        }
+
+        this.canvas.on('selection:created', async (e) => {
+            const objects = e.selected
+            if (!objects || e.lenght === 0) {
+                return
+            }
+            await selectionHandler(objects)
+        });
+
+        this.canvas.on('selection:updated', async (e) => {
+            const objects = e.selected
+            if (!objects || e.lenght === 0) {
+                return
+            }
+            await selectionHandler(objects)
+        });
+
+        this.canvas.on('selection:cleared', async (e) => {
+            const allBts = [boldBtn, italicBtn, underlineBtn, strikethroughBtn]
+            allBts.forEach(x => {
+                x.classList.remove('mixed-state')
+            })
+
+            const currentStateBold = this._getIsAreaPressed(boldBtn)
+            if (currentStateBold !== this._usrTxtStyleSelet.bold) {
+                await this._toggleButton(boldBtn)
+            }
+
+            const currentStateItalic = this._getIsAreaPressed(italicBtn)
+            if (currentStateItalic !== this._usrTxtStyleSelet.italic) {
+                await this._toggleButton(italicBtn)
+            }
+
+            const currentStateUnderline = this._getIsAreaPressed(underlineBtn)
+            if (currentStateUnderline !== this._usrTxtStyleSelet.underline) {
+                await this._toggleButton(underlineBtn)
+            }
+
+            const currentStateStrikethrough = this._getIsAreaPressed(strikethroughBtn)
+            if (currentStateStrikethrough !== this._usrTxtStyleSelet.strikethrough) {
+                await this._toggleButton(strikethroughBtn)
+            }
+        });
+
+        strikethroughBtn.disabled = false
+        underlineBtn.disabled = false
+        italicBtn.disabled = false
+        boldBtn.disabled = false
     }
 
     bindFontSize(id) {
@@ -268,10 +487,13 @@ export class Toolbar {
 
     addText(text) {
         const txtFillColor = FromHexToRGBA(this.textFillColor.value)
-        const strokeWidth = parseInt(this.textStrokeWidth.value)
-        const strokeOpacity = parseInt(this.textStrokeOpacity.value) / 100
+        const strokeWidth = parseFloat(this.textStrokeWidth.value)
+        const strokeOpacity = parseFloat(this.textStrokeOpacity.value) / 100
         const strokeColor = FromHexToRGBA(this.textStrokeColor.value, strokeOpacity)
         const selectedFont = document.getElementById('font-selector')
+        const fontStyle = this._getIsAreaPressed(txtItalicBtn) ? 'italic' : 'normal'
+        const fontWeight = this._getIsAreaPressed(txtBoldBtn) ? 'bold' : 'normal'
+
         let font = null
         if (!selectedFont) {
             font = 'Montserrat-regular'
@@ -287,8 +509,25 @@ export class Toolbar {
             fill: txtFillColor,
             stroke: strokeColor,
             strokeWidth: strokeWidth,
-            fontFamily: font
+            fontFamily: font,
+            fontStyle: fontStyle,
+            fontWeight: fontWeight,
+            underline: this._getIsAreaPressed(txtUnderlineBtn),
+            linethrough: this._getIsAreaPressed(txtStrikethroughBtn)
         });
         this.canvas.add(txt)
     }
+
+    _getIsAreaPressed(element) {
+        if (!element) { return false }
+        const attrib = element.getAttribute('aria-pressed')
+        if (!attrib) { return false }
+        return attrib === 'true'
+    }
+
+    async _toggleButton(btn) {
+        const button = await bootstrap.Button.getOrCreateInstance(btn)
+        await button.toggle()
+    }
+
 }

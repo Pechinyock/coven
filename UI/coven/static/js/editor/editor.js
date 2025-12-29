@@ -1,6 +1,7 @@
-import { Toolbar } from "./toolbar.js";
+import { TextEdit } from "./text_edit.js";
 import { ObjectsOreder } from "./objects_ordering.js";
 import { ControlMenu } from "./control_menu.js";
+import { Geometry } from "./geometry.js";
 
 class Editor {
     constructor(canvasId) {
@@ -9,11 +10,12 @@ class Editor {
 
         this.setBgColor('#ffffffff')
         this.setSize(600, 800)
-        this._initToolbar()
+        this._initTextEdit()
         this._initCanvasEvents()
         this._initKeyEvents()
         this._initObjectOrdering()
         this._initControlMenu()
+        this._initGeometry()
 
         const urlParams = new URLSearchParams(window.location.search)
         if (!urlParams || urlParams.size === 0) {
@@ -71,18 +73,18 @@ class Editor {
 
     _setCardName(name) {
         const saveForm = document.getElementById('save-result-form')
-        if (!saveForm){
+        if (!saveForm) {
             console.error('failed to set editing card name, save result form not found')
             return
         }
         const cardNameInput = document.getElementById('cardName')
-        if (!cardNameInput){
+        if (!cardNameInput) {
             console.error('failed to set editing card name cardName input not found')
             return
         }
         cardNameInput.value = name
         const cardNameProxyInput = document.getElementById('name-proxy-control')
-        if (!cardNameInput){
+        if (!cardNameInput) {
             console.error('failed to set editing card name name-proxy-control input not found')
             return
         }
@@ -102,21 +104,34 @@ class Editor {
         }
         radios.forEach(x => { x.checked = (x.value === type) })
         const cardTypeInput = document.getElementById('cardType')
-        if (!cardTypeInput){
+        if (!cardTypeInput) {
             console.error('failed to set card type cardType not found')
             return
         }
         cardTypeInput.value = type
     }
 
-    _initToolbar() {
-        const toolbar = new Toolbar(this.canvas)
+    _initTextEdit() {
+        const toolbar = new TextEdit(this.canvas)
         toolbar.bindAddText('toolbar-add-txt')
         toolbar.bindColorPicker('toolbar-txt-color', 'toolbar-txt-opacity')
         toolbar.bindFontSize('toolbar-txt-font-size')
         toolbar.bindTextStroke('toolbar-txt-stroke-color', 'toolbar-txt-stroke-opacity', 'toolbar-txt-stroke-width')
         toolbar.bindFontSelector('font-selector')
+        toolbar.bindTextStyle()
         this.toolbar = toolbar
+    }
+
+    _initGeometry() {
+        const geometry = new Geometry(this.canvas)
+        geometry.bindFillColor(geometryFillColor)
+        geometry.bindFillTransparency(geometryFillTransparency)
+        geometry.bindStrokeWidth(geometryStrokeWidth)
+        geometry.bindStrokeColor(geometryStrokeColor)
+        geometry.bindCreateRect(createRectBtn)
+        geometry.bindCreateCircle(createCircleBtn)
+        geometry.bindCreateTriangle(createTriangleBtn)
+        this.geometry = geometry
     }
 
     _initObjectOrdering() {
@@ -142,6 +157,8 @@ class Editor {
         document.addEventListener('keyup', (e) => {
             const active = this.canvas.getActiveObject()
             if (e.key === 'Delete') {
+                this.canvas.fire('selection:updated')
+                this.canvas.fire('selection:cleared')
                 if (ObjectsOreder.IsEditingObjId) {
                     return
                 }

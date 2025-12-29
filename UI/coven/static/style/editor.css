@@ -13,3 +13,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.btn.mixed-state {
+    background-image:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 5px,
+            rgba(0, 0, 0, 0.5) 5px,
+            rgb(0, 0, 0.5) 10px);
+    background-color: var(--bs-primary);
+    /* Bootstrap primary color */
+    color: white;
+    border-color: var(--bs-primary);
+}
