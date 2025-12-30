@@ -10,7 +10,7 @@ const FormPrefix = "/form"
 func GetFormEndpoints() []endpoint.Endpoint {
 	return []endpoint.Endpoint{
 		{
-			Path:        path.Join(FormPrefix, "card"),
+			Path:        "/card",
 			Methods:     []string{"POST", "GET", "PUT", "DELETE"},
 			Secure:      true,
 			HandlerFunc: cardHandleFunc,

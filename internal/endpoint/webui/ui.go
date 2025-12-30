@@ -3,6 +3,7 @@ package webui
 import (
 	"coven/internal/cards"
 	"coven/internal/endpoint"
+	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/projection"
 	"coven/internal/ui"
 	"fmt"
@@ -14,11 +15,11 @@ import (
 
 const UIPrefix = "/ui"
 
-var uiBundle ui.WebUIBundle
+var UIBundle ui.WebUIBundle
 
 func SetUIBundle(newBundle ui.WebUIBundle) {
 	slog.Info("ui builde has been set")
-	uiBundle = newBundle
+	UIBundle = newBundle
 }
 
 func GetUIEndpoints() []endpoint.Endpoint {
@@ -28,7 +29,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods: []string{"GET"},
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				err := uiBundle.Render("main", w, nil)
+				err := UIBundle.Render("main", w, nil)
 				if err != nil {
 					SendFailed(w, fmt.Sprintf("failed to load %q", "main"))
 				}
@@ -39,7 +40,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods: []string{"GET"},
 			Secure:  false,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				uiBundle.Render("login_screen", w, nil)
+				UIBundle.Render("login_screen", w, nil)
 			},
 		},
 		{
@@ -47,7 +48,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods: []string{"GET"},
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				uiBundle.Render("menu", w, nil)
+				UIBundle.Render("menu", w, nil)
 			},
 		},
 		{
@@ -55,7 +56,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods: []string{"GET"},
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				err := uiBundle.Render("coven", w, nil)
+				err := UIBundle.Render("coven", w, nil)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -67,7 +68,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods: []string{"GET"},
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				err := uiBundle.Render("modal_window", w, nil)
+				err := UIBundle.Render("modal_window", w, nil)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -87,43 +88,13 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				templName := strings.ReplaceAll(modalName, "-", "_")
 				renderFunc, defined := modalsMap[templName]
 				if !defined {
-					slog.Error(fmt.Sprintf("modal winodw not found %q", modalName))
+					message := fmt.Sprintf("modal winodw not found %q", modalName)
+					SendFailed(w, message)
+					slog.Error(message)
 					w.WriteHeader(http.StatusNotFound)
 					return
 				}
 				renderFunc(templName, w)
-			},
-		},
-		{
-			Path:    path.Join(UIPrefix, "create-card-from"),
-			Methods: []string{"GET"},
-			Secure:  true,
-			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				cardType := r.FormValue("create-card-group")
-				cardTypeLower := strings.ToLower(cardType)
-				_, isExists := cards.CardTypes[cardTypeLower]
-				if !isExists {
-					slog.Error("failed to render card create form: unknown type", "provided type", cardType)
-					w.WriteHeader(http.StatusNotFound)
-				}
-
-				switch cardTypeLower {
-				case "characters":
-					uiBundle.Render("create_character", w, nil)
-				case "spells":
-					w.Write([]byte("unimplemented spells"))
-				case "secrets":
-					w.Write([]byte("unimplemented secrets"))
-				case "curses":
-					w.Write([]byte("unimplemented curses"))
-				case "ingredients":
-					w.Write([]byte("unimplemented ingredients"))
-				case "potions":
-					w.Write([]byte("unimplemented potions"))
-				default:
-					slog.Error("unknown card type", "type", cardTypeLower)
-					w.WriteHeader(http.StatusInternalServerError)
-				}
 			},
 		},
 		{
@@ -155,19 +126,20 @@ func GetUIEndpoints() []endpoint.Endpoint {
 					w.Write([]byte("Картинки данного типа еще не загружены"))
 					return
 				}
+				baseUriPath := shareddirs.ImagePoolDirPath.Uri
 				poolView := projection.ImageViewProj{
 					BasePath:  baseUriPath,
 					FileGroup: poolNameLower,
 					Images:    prewiewData,
 				}
 
-				err = uiBundle.Render("select_image", w, poolView)
+				err = UIBundle.Render("select_image", w, poolView)
 				if err != nil {
 					slog.Error("failed to render image pool", "group", poolName,
 						"error message", err.Error(),
 					)
 					errMsg := fmt.Sprintf("Не удалось отобразить картинки для группы: %s", poolName)
-					uiBundle.Render("alert", w, projection.AlertProj{
+					UIBundle.Render("alert", w, projection.AlertProj{
 						Message: errMsg,
 						Type:    "danger",
 					})
@@ -180,8 +152,10 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods: []string{"GET"},
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
-				ch := getChapters()
-				err := uiBundle.Render("generated_cards_view", w, ch)
+				ch := projection.CardViewSkeletProj{
+					Chapters: cards.CardTypes,
+				}
+				err := UIBundle.Render("generated_cards_view", w, ch)
 				if err != nil {
 					SendFailed(w, fmt.Sprintf("failed to load %q", "generated_cards_view"))
 				}
@@ -193,12 +167,46 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Secure:  true,
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
 				chapterName := r.PathValue("chapterName")
-				chapter, err := getGeneratedCards(chapterName)
-				if err != nil {
-					SendFailed(w, err.Error())
+				_, exists := cards.CardTypes[chapterName]
+				if !exists {
+					SendFailed(w, fmt.Sprintf("неизвестный тип карт %s", chapterName))
+					w.WriteHeader(http.StatusBadRequest)
 					return
 				}
-				err = uiBundle.Render("complete_card_chapter", w, chapter)
+				pathToCards := path.Join(shareddirs.CompleteCardsDirPath.Path, chapterName)
+				fileNames, err := cards.GetCardFileNames(pathToCards, "png")
+				if err != nil {
+					SendFailed(w, fmt.Sprintf("при загрузке карт %s произошла ошибка сервера", chapterName))
+					slog.Error("failed to load card file names", "card type name", chapterName)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				if len(fileNames) == 0 {
+					SendFailed(w, "Таких карт ещё нет")
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
+				cardProjs := make([]projection.CompleteCardProj, len(fileNames))
+				uriRoot := path.Join(shareddirs.CompleteCardsDirPath.Uri, chapterName)
+				for i, c := range fileNames {
+					cutName, _, found := strings.Cut(c, ".")
+					cardProjs[i].Type = chapterName
+					if found {
+						cardProjs[i].Name = cutName
+					} else {
+						slog.Error("failed to get complete card name after cutting file name")
+					}
+					cardProjs[i].Uri = path.Join(uriRoot, c)
+				}
+
+				tmp := struct {
+					Cards []projection.CompleteCardProj
+				}{
+					Cards: cardProjs,
+				}
+				w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+				err = UIBundle.Render("complete_cards_chapter", w, tmp)
 				if err != nil {
 					SendFailed(w, err.Error())
 					return
@@ -231,6 +239,19 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				default:
 					w.WriteHeader(http.StatusMethodNotAllowed)
 				}
+			},
+		},
+		{
+			Path:        "/editor",
+			Methods:     []string{"GET"},
+			Secure:      true,
+			HandlerFunc: loadEditorFunc,
+		},
+		{
+			Path:    "/ui/card-types",
+			Methods: []string{"GET"},
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				UIBundle.Render("card_types_selection", w, cards.CardTypes)
 			},
 		},
 	}

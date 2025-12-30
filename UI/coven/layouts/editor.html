@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card editor</title>
+    <link rel="stylesheet" href="assets/style/lib/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style/lib/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/style/app-global.css">
+    <link rel="stylesheet" href="assets/style/editor.css">
+    <script src="assets/js/lib/htmx.min.js" defer></script>
+    <script src="assets/js/lib/htmx-ext-response-targets.min.js" defer></script>
+    <script src="assets/js/lib/bootstrap.bundle.min.js" defer></script>
+    <script src="assets/js/lib/fabric.js" defer></script>
+    <script type="module" src="assets/js/editor/editor.js" defer></script>
+    <script type="module" src="assets/js/editor/text_edit.js" defer></script>
+    <script type="module" src="assets/js/editor/color.js" defer></script>
+    <script type="module" src="assets/js/editor/objects_ordering.js"
+        defer></script>
+    <script type="module" src="assets/js/editor/control_menu.js" defer></script>
+    <script type="module" src="assets/js/editor/geometry.js" defer></script>
+</head>
+
+<body>
+    <main class="container-fluid mt-4">
+        <section class="row">
+            <div class="col-1">
+                <button class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#modal"
+                    class="btn btn-primary">Сохранить</button>
+            </div>
+        </section>
+        <section class="row">
+            <div class="col-3">
+                <div class="accordion accordion-flush mt-4">
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-text">
+                            Текст
+                        </button>
+                    </div>
+                    <div id="collapse-text"
+                        class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col">
+                                    Шрифт:
+                                    <select id="font-selector"
+                                        class="form-select" disabled>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-1"></div>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtBoldBtn" data-bs-toggle="button"
+                                    aria-pressed="false" disabled>
+                                    <i class="bi bi-type-bold"></i>
+                                </button>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtItalicBtn" data-bs-toggle="button"
+                                    aria-pressed="false" disabled>
+                                    <i class="bi bi-type-italic"></i>
+                                </button>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtUnderlineBtn" data-bs-toggle="button"
+                                    aria-pressed="false" disabled>
+                                    <i class="bi bi-type-underline"></i>
+                                </button>
+                                <button type="button"
+                                    class="col-2 mx-2 btn btn-outline-primary btn-sm"
+                                    id="txtStrikethroughBtn"
+                                    data-bs-toggle="button" aria-pressed="false"
+                                    disabled>
+                                    <i class="bi bi-type-strikethrough"></i>
+                                </button>
+                                <div class="col-1"></div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Цвет: <input type="color"
+                                        id="toolbar-txt-color" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Прозрачность: <input type="range" min="0"
+                                        max="100" value="100"
+                                        id="toolbar-txt-opacity" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Размер шрифта: <input type="range" min="10"
+                                        max="56" value="24"
+                                        id="toolbar-txt-font-size" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Цвет обводки: <input type="color"
+                                        id="toolbar-txt-stroke-color" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Ширина: <input type="range" min="0" max="10"
+                                        value="0" id="toolbar-txt-stroke-width"
+                                        step="0.1" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Прозрачность: <input type="range" min="0"
+                                        max="100" value="100"
+                                        id="toolbar-txt-stroke-opacity"
+                                        disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <button id="toolbar-add-txt"
+                                    class="btn btn-primary" disabled>Новый
+                                    текст</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-geometry">
+                            ГЕОМЕТРИЯ
+                        </button>
+                    </div>
+                    <div id="collapse-geometry"
+                        class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row mt-1">
+                                <div class="col-2"></div>
+                                <button id="createRectBtn" type="button"
+                                    class="col-2 btn btn-outline-primary btn-sm mx-2"
+                                    disabled>
+                                    <i class="bi bi-square"
+                                        style="color:whitesmoke;"></i>
+                                </button>
+                                <button id="createTriangleBtn" type="button"
+                                    class="col-2 btn btn-outline-primary btn-sm mx-2"
+                                    disabled>
+                                    <i class="bi bi-triangle"
+                                        style="color:whitesmoke;"></i>
+                                </button>
+                                <button id="createCircleBtn" type="button"
+                                    class="col-2 btn btn-outline-primary btn-sm mx-2"
+                                    disabled>
+                                    <i class="bi bi-circle"
+                                        style="color:whitesmoke;"></i>
+                                </button>
+                                <div class="col"></div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Заливка:
+                                    <input type="color" id="geometryFillColor"
+                                        disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Прозрачность: <input type="range" min="0"
+                                        max="100" value="100"
+                                        id="geometryFillTransparency" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Цвет обводки: <input type="color"
+                                        id="geometryStrokeColor" disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    Ширина обводки: <input type="range" min="0"
+                                        max="100" value="0"
+                                        id="geometryStrokeWidth" step="0.1"
+                                        disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="row mt-1">
+                                    <div class="col-8">
+                                        Закруглить:
+                                    </div>
+                                    <div class="col-4"
+                                        style="font-size: xx-small;color:rgba(255, 28, 28, 0.548)">
+                                        *только для квадрата
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label
+                                        for="geometryRoundRectScale">Scale</label>
+                                    <input type="range" min="0" max="10"
+                                        value="1" id="geometryRoundRectScale"
+                                        step="0.1" disabled>
+                                </div>
+                                <div class="row">
+                                    <label
+                                        for="geometryRoundRectX">X:</label>
+                                    <input type="range" min="0" max="45"
+                                        value="0" id="geometryRoundRectX"
+                                        step="0.1" disabled>
+                                </div>
+                                <div class="row">
+                                    <label
+                                        for="geometryRoundRectY">Y:</label>
+                                    <input type="range" min="0" max="45"
+                                        value="0" id="geometryRoundRectY"
+                                        step="0.1" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row justify-content-center align-items-center">
+                    <canvas id="card-canvas"></canvas>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    Объекты
+                </div>
+                <div class="row flex-nowrap overflow-hidden">
+                    <div id="objects-ordering" class="objects-view">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <form id="save-result-form" hx-post="/card" hx-trigger="saveCanvasEvent"
+        hx-swap="innerHTML" hx-target="#save-response" style="display: none;">
+        <input type="hidden" name="cardType" id="cardType" />
+        <input type="hidden" name="cardName" id="cardName" />
+        <input type="hidden" name="jsonData" id="jsonData" />
+        <input type="hidden" name="pngData" id="pngData" />
+    </form>
+
+    <div class="modal fade modal-lg" id="modal" data-bs-backdrop="static"
+        tabindex="-1" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"></h1>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="container">
+                    <div hx-get="/ui/card-types" hx-target="#card-types"
+                        hx-swap="innerHTML" hx-trigger="load">
+                    </div>
+                    <div class="row">
+                        <div class="col-12" id="card-types"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="name-proxy-control">Название</label>
+                            <input class="form-control" type="text"
+                                hx-on:change="document.getElementById('cardName').value = this.value"
+                                id="name-proxy-control" required>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-12 d-flex justify-content-end">
+                            <button class="btn btn-primary w-100"
+                                id="save-result-btn" disabled>Сохранить</button>
+                        </div>
+                        <div id="save-response" class="col-12 mt-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

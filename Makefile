@@ -23,11 +23,9 @@ linux-builder_build:
 win-builder_win-x64:
 	$(MAKE) win-builder_build GOOS=windows GOARCH=amd64
 	xcopy "$(UI_DIR)" "$(WIN_OUT_DIR)/ui" /E /I /Y >nul
-	xcopy "$(TEMPLATES_DIR)" "$(WIN_OUT_DIR)/ui/card_templates" /E /I /Y >nul
 	copy "$(CURDIR)/config\$(DEFAULT_CONFIG)" "$(WIN_OUT_DIR)\"
 
 linux-builder_win-x64:
 	$(MAKE) linux-builder_build GOOS=windows GOARCH=amd64
 	cp -r "$(UI_DIR)" "$(WIN_OUT_DIR)/ui/" && \
-	cp -r "$(TEMPLATES_DIR)" "$(WIN_OUT_DIR)/ui/card_templates/" && \
 	cp "$(CURDIR)/config/$(DEFAULT_CONFIG)" "$(WIN_OUT_DIR)/"

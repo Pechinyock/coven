@@ -4,11 +4,8 @@ type CardViewSkeletProj struct {
 	Chapters map[string]string
 }
 
-type ChapterProj struct {
-	Cards []CompletCardViewProj
-}
-
-type CompletCardViewProj struct {
-	Name       string
-	IFramePath string
+type CompleteCardProj struct {
+	Name string
+	Type string
+	Uri  string
 }

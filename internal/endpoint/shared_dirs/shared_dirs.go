@@ -9,3 +9,4 @@ var ImagePoolDirPath SharedDirPaths
 var CompleteCardsDirPath SharedDirPaths
 var CardsJsonDataDirPath SharedDirPaths
 var CardTemplatesDirPath SharedDirPaths
+var CardStylesDirPath SharedDirPaths

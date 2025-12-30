@@ -3,11 +3,9 @@ package cards
 import (
 	shareddirs "coven/internal/endpoint/shared_dirs"
 	"coven/internal/utils"
-	"encoding/json"
+	"encoding/base64"
 	"errors"
 	"fmt"
-	"html/template"
-	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -22,61 +20,109 @@ var CardTypes = map[string]string{
 	"potions":     "Зелье",
 }
 
-var typeTemplPath = map[string]string{
-	"characters":  "character_templ.html",
-	"spells":      "",
-	"secrets":     "",
-	"curses":      "",
-	"ingredients": "",
-	"potions":     "",
+func IsCardExists(cardType, cardName string) (bool, error) {
+	pathToCondidate := filepath.Join(shareddirs.CardsJsonDataDirPath.Path,
+		cardType,
+		fmt.Sprintf("%s.json", cardName))
+
+	files, err := filepath.Glob(pathToCondidate)
+	if err != nil {
+		return false, err
+	}
+	return len(files) > 0, nil
 }
 
-func GenerateCard(cardType, cardName, outputPath, templatesPath string, data any) error {
-	templateName := typeTemplPath[cardType]
-	templatePath := filepath.Join(templatesPath, templateName)
-	slog.Info("ready to generate card", "path", templateName)
-	if templateName == "" {
-		return errors.New("cant't find file")
+func GetCardFileNames(dirPath, fileType string) ([]string, error) {
+	if fileType != "png" && fileType != "json" {
+		return nil, errors.New("unknown file type")
 	}
-	rootTemplName := "card"
-	templ, err := template.New(rootTemplName).ParseFiles(templatePath)
+	files, err := filepath.Glob(filepath.Join(dirPath, fmt.Sprintf("*.%s", fileType)))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if !utils.IsDirExists(outputPath) {
-		if err := os.MkdirAll(outputPath, 0755); err != nil {
-			return err
-		}
+	var names []string
+	for _, fullPath := range files {
+		names = append(names, filepath.Base(fullPath))
 	}
-	fullPath := path.Join(outputPath, cardType, cardName)
-	if utils.IsFileExists(fullPath) {
-		slog.Warn("overriding existg card", "path", fullPath)
-	}
-	fileResult, err := os.Create(fullPath + ".html")
-	if err != nil {
-		return err
-	}
-	defer fileResult.Close()
-	err = templ.ExecuteTemplate(fileResult, templateName, data)
-	if err != nil {
-		return err
-	}
-	jsonOutDir := shareddirs.CardsJsonDataDirPath.Path
-	return saveCardData(jsonOutDir, cardType, cardName, data)
+	return names, nil
 }
 
-func saveCardData(cardDataDirPath, cardType, cardName string, data any) error {
-	pathToTypeDir := path.Join(cardDataDirPath, cardType)
-	if !utils.IsDirExists(pathToTypeDir) {
-		if err := os.MkdirAll(pathToTypeDir, 0755); err != nil {
-			return err
-		}
+func SaveCard(cardType, cardName, saveFormat, data string) error {
+	if saveFormat == "png" {
+		return savePng(cardType, cardName, data)
 	}
-	jsonBytes, err := json.MarshalIndent(data, "", "  ")
+	if saveFormat == "json" {
+		return saveJson(cardType, cardName, data)
+	}
+	return nil
+}
+
+func DeleteCard(cardType, cardName string) error {
+	pathToCondidate := filepath.Join(shareddirs.CardsJsonDataDirPath.Path,
+		cardType,
+		fmt.Sprintf("%s.json", cardName),
+	)
+
+	files, err := filepath.Glob(pathToCondidate)
 	if err != nil {
 		return err
 	}
-	filename := fmt.Sprintf("%s.json", cardName)
-	saveToPath := filepath.Join(pathToTypeDir, filename)
-	return os.WriteFile(saveToPath, jsonBytes, 0644)
+	if len(files) == 0 {
+		return fmt.Errorf("coudn't find card json data, type %q, name %q", cardType, cardName)
+	}
+	if len(files) > 1 {
+		return errors.New("file glob returns more than 1 value")
+	}
+	err = os.Remove(files[0])
+	if err != nil {
+		return err
+	}
+	pathToCondidate = filepath.Join(shareddirs.CompleteCardsDirPath.Path,
+		cardType,
+		fmt.Sprintf("%s.png", cardName),
+	)
+	files, err = filepath.Glob(pathToCondidate)
+	if err != nil {
+		return err
+	}
+	if len(files) == 0 {
+		return fmt.Errorf("coudn't find card png image, type %q, name %q", cardType, cardName)
+	}
+	if len(files) > 1 {
+		return errors.New("file glob returns more than 1 value")
+	}
+	err = os.Remove(files[0])
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadCardJsonData(cardType, cardName string) ([]byte, error) {
+	pathToJson := path.Join(shareddirs.CardsJsonDataDirPath.Path,
+		cardType,
+		fmt.Sprintf("%s.json", cardName),
+	)
+	if !utils.IsFileExists(pathToJson) {
+		return nil, fmt.Errorf("file not found: %s", pathToJson)
+	}
+	data, err := os.ReadFile(pathToJson)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func saveJson(cardType, cardName, data string) error {
+	fullPath := path.Join(shareddirs.CardsJsonDataDirPath.Path, cardType, fmt.Sprintf("%s.json", cardName))
+	return os.WriteFile(fullPath, []byte(data), 0644)
+}
+
+func savePng(cardType, cardName, data string) error {
+	pngData, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return err
+	}
+	fullPath := path.Join(shareddirs.CompleteCardsDirPath.Path, cardType, fmt.Sprintf("%s.png", cardName))
+	return os.WriteFile(fullPath, pngData, 0644)
 }

@@ -1,0 +1,16 @@
+<section class="container-fluid">
+    <div class="row">
+        <div id="cards-type-selector" class="d-flex flex-wrap gap-3 my-2">
+            {{range $key, $label := .}}
+            <div class="form-check" style="flex: 0 0 30%;">
+                <input class="form-check-input" type="radio" name="group"
+                    id="radio-{{$key}}" value="{{$key}}"
+                    hx-on:change="editor.controlMenu.savingCardTypeChanged(this)">
+                <label class="form-check-label" for="radio-{{$key}}">
+                    {{$label}}
+                </label>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</section>
