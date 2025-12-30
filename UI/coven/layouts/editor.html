@@ -194,8 +194,42 @@
                             <hr>
                             <div class="row">
                                 <div class="col">
-                                    Ширина обводки: <input type="range" min="0" max="100"
-                                        value="0" id="geometryStrokeWidth"
+                                    Ширина обводки: <input type="range" min="0"
+                                        max="100" value="0"
+                                        id="geometryStrokeWidth" step="0.1"
+                                        disabled>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="row mt-1">
+                                    <div class="col-8">
+                                        Закруглить:
+                                    </div>
+                                    <div class="col-4"
+                                        style="font-size: xx-small;color:rgba(255, 28, 28, 0.548)">
+                                        *только для квадрата
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label
+                                        for="geometryRoundRectScale">Scale</label>
+                                    <input type="range" min="0" max="10"
+                                        value="1" id="geometryRoundRectScale"
+                                        step="0.1" disabled>
+                                </div>
+                                <div class="row">
+                                    <label
+                                        for="geometryRoundRectX">X:</label>
+                                    <input type="range" min="0" max="45"
+                                        value="0" id="geometryRoundRectX"
+                                        step="0.1" disabled>
+                                </div>
+                                <div class="row">
+                                    <label
+                                        for="geometryRoundRectY">Y:</label>
+                                    <input type="range" min="0" max="45"
+                                        value="0" id="geometryRoundRectY"
                                         step="0.1" disabled>
                                 </div>
                             </div>

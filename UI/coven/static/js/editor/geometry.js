@@ -22,6 +22,9 @@ export class Geometry {
             const fillColor = FromHexToRGBA(this.fillColor.value)
             const strokeColor = FromHexToRGBA(this.strokeColor.value)
             const strokeWidth = parseFloat(this.strokeWidth.value)
+            const roundScale = parseFloat(this.roundScale.value)
+            const roundX = parseFloat(this.roundRectX.value) * roundScale
+            const roundY = parseFloat(this.roundRectY.value) * roundScale
             const newRect = new fabric.Rect({
                 left: this._newObjSpan.x,
                 top: this._newObjSpan.y,
@@ -29,6 +32,8 @@ export class Geometry {
                 height: 100,
                 fill: fillColor,
                 stroke: strokeColor,
+                rx: roundX || 0,
+                ry: roundY || 0,
                 strokeWidth: strokeWidth
             })
             this.canvas.add(newRect)
@@ -218,6 +223,92 @@ export class Geometry {
         })
         this.strokeWidth = input
         input.disabled = false
+    }
+
+    bindRectRound(inputX, inputY, inputScale) {
+        if (!inputX) {
+            console.error('failed to bind rect round')
+            return
+        }
+        if (!inputY) {
+            console.error('failed to bind rect round')
+            return
+        }
+        if (!inputScale) {
+            console.error('failed to bind rect round')
+            return
+        }
+
+        inputX.addEventListener('input', (e) => {
+            const active = this.canvas.getActiveObject()
+
+            if (!active) { return }
+            const round = parseFloat(e.target.value) || 0
+            const roundScale = parseFloat(this.roundScale.value) || 1
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (obj.type === 'rect') {
+                        obj.set('rx', round * roundScale)
+                    }
+                });
+            } else if (active.type === 'rect') {
+                active.set('rx', round * roundScale)
+            }
+
+            this.canvas.renderAll()
+        })
+
+        inputY.addEventListener('input', (e) => {
+            const active = this.canvas.getActiveObject()
+
+            if (!active) { return }
+            const round = parseFloat(e.target.value) || 0
+            const roundScale = parseFloat(this.roundScale.value) || 1
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (obj.type === 'rect') {
+                        obj.set('ry', round * roundScale)
+                    }
+                });
+            } else if (active.type === 'rect') {
+                active.set('ry', round * roundScale)
+            }
+
+            this.canvas.renderAll()
+        })
+
+        inputScale.addEventListener('input', (e) => {
+            const active = this.canvas.getActiveObject()
+
+            if (!active) { return }
+            const roundScale = parseFloat(e.target.value) || 1
+            const roundX = parseFloat(this.roundRectX.value) || 0
+            const roundY = parseFloat(this.roundRectY.value) || 0
+            if (active.type === 'activeSelection') {
+                const objs = active.getObjects()
+                objs.forEach(obj => {
+                    if (obj.type === 'rect') {
+                        obj.set('ry', roundY * roundScale)
+                        obj.set('rx', roundX * roundScale)
+                    }
+                });
+            } else if (active.type === 'rect') {
+                active.set('ry', roundY * roundScale)
+                active.set('rx', roundX * roundScale)
+            }
+
+            this.canvas.renderAll()
+        })
+
+        this.roundRectX = inputX
+        this.roundRectY = inputY
+        this.roundScale = inputScale
+
+        inputX.disabled = false
+        inputY.disabled = false
+        inputScale.disabled = false
     }
 
     _isGeometry(obj) {

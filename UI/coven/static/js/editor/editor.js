@@ -131,6 +131,7 @@ class Editor {
         geometry.bindCreateRect(createRectBtn)
         geometry.bindCreateCircle(createCircleBtn)
         geometry.bindCreateTriangle(createTriangleBtn)
+        geometry.bindRectRound(geometryRoundRectX, geometryRoundRectY, geometryRoundRectScale)
         this.geometry = geometry
     }
 
