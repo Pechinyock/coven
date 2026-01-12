@@ -1,4 +1,5 @@
 import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity } from "./color.js"
+import { BindDivToRange } from "./utils.js"
 
 export class Geometry {
     constructor(canvas) {
@@ -34,7 +35,8 @@ export class Geometry {
                 stroke: strokeColor,
                 rx: roundX || 0,
                 ry: roundY || 0,
-                strokeWidth: strokeWidth
+                strokeWidth: strokeWidth,
+                strokeUniform: true,
             })
             this.canvas.add(newRect)
             this._updateNewObjCreatedPosition()
@@ -131,7 +133,13 @@ export class Geometry {
             console.error('failed to bind transparency')
             return
         }
+        if (geometryOpacityValueLabel) {
+            geometryOpacityValueLabel.textContent = input.value
+        }
         input.addEventListener('input', (e) => {
+            if (geometryOpacityValueLabel) {
+                geometryOpacityValueLabel.textContent = input.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
             const opacity = parseInt(e.target.value) / 100
@@ -158,6 +166,9 @@ export class Geometry {
 
             this.canvas.renderAll()
         })
+
+        BindDivToRange(geometryOpacityValueLabel, input, 'int')
+
         input.disabled = false
     }
 
@@ -204,7 +215,13 @@ export class Geometry {
             console.error('failed to bind geometry stroke width')
             return
         }
+        if (geometryStrokeWidthValueLabel) {
+            geometryStrokeWidthValueLabel.textContent = input.value
+        }
         input.addEventListener('input', (e) => {
+            if (geometryStrokeWidthValueLabel) {
+                geometryStrokeWidthValueLabel.textContent = input.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
             const size = parseFloat(e.target.value)
@@ -221,6 +238,8 @@ export class Geometry {
 
             this.canvas.renderAll()
         })
+
+        BindDivToRange(geometryStrokeWidthValueLabel, input, 'float')
         this.strokeWidth = input
         input.disabled = false
     }
@@ -239,7 +258,13 @@ export class Geometry {
             return
         }
 
+        if (geometryRoundRectXValueLabel) {
+            geometryRoundRectXValueLabel.textContent = inputX.value
+        }
         inputX.addEventListener('input', (e) => {
+            if (geometryRoundRectXValueLabel) {
+                geometryRoundRectXValueLabel.textContent = inputX.value
+            }
             const active = this.canvas.getActiveObject()
 
             if (!active) { return }
@@ -259,7 +284,13 @@ export class Geometry {
             this.canvas.renderAll()
         })
 
+        if (geometryRoundRectYValueLabel) {
+            geometryRoundRectYValueLabel.textContent = inputY.value
+        }
         inputY.addEventListener('input', (e) => {
+            if (geometryRoundRectYValueLabel) {
+                geometryRoundRectYValueLabel.textContent = inputY.value
+            }
             const active = this.canvas.getActiveObject()
 
             if (!active) { return }
@@ -279,7 +310,14 @@ export class Geometry {
             this.canvas.renderAll()
         })
 
+        if (geometryRoundRectScaleValueLabel) {
+            geometryRoundRectScaleValueLabel.textContent = inputScale.value
+        }
         inputScale.addEventListener('input', (e) => {
+            if (geometryRoundRectScaleValueLabel) {
+                geometryRoundRectScaleValueLabel.textContent = inputScale.value
+            }
+
             const active = this.canvas.getActiveObject()
 
             if (!active) { return }
@@ -305,6 +343,10 @@ export class Geometry {
         this.roundRectX = inputX
         this.roundRectY = inputY
         this.roundScale = inputScale
+
+        BindDivToRange(geometryRoundRectScaleValueLabel, inputScale, 'float')
+        BindDivToRange(geometryRoundRectYValueLabel, inputY, 'float')
+        BindDivToRange(geometryRoundRectXValueLabel, inputX, 'float')
 
         inputX.disabled = false
         inputY.disabled = false
