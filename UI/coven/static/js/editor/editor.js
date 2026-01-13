@@ -2,6 +2,7 @@ import { TextEdit } from "./text_edit.js";
 import { ObjectsOreder } from "./objects_ordering.js";
 import { ControlMenu } from "./control_menu.js";
 import { Geometry } from "./geometry.js";
+import { IsEditingRange } from "./utils.js";
 
 class Editor {
     constructor(canvasId) {
@@ -160,7 +161,7 @@ class Editor {
             if (e.key === 'Delete') {
                 this.canvas.fire('selection:updated')
                 this.canvas.fire('selection:cleared')
-                if (ObjectsOreder.IsEditingObjId) {
+                if (ObjectsOreder.IsEditingObjId || IsEditingRange) {
                     return
                 }
                 if (active) {

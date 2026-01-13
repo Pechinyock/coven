@@ -1,4 +1,5 @@
-import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity } from "./color.js"
+import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity, ExtractAlpha, FromRGBAToHex } from "./color.js"
+import { BindDivToRange, SetControlGroupRangeLabelsVisibility } from "./utils.js"
 
 export class Geometry {
     constructor(canvas) {
@@ -11,6 +12,9 @@ export class Geometry {
             x: 50,
             y: 50,
         }
+        canvas.on('selection:created', (e) => { this._onSelection(e) })
+        canvas.on('selection:updated', (e) => { this._onSelection(e) })
+        canvas.on('selection:cleared', (e) => { this._onSelectionCleared(e) })
     }
 
     bindCreateRect(btn) {
@@ -34,7 +38,8 @@ export class Geometry {
                 stroke: strokeColor,
                 rx: roundX || 0,
                 ry: roundY || 0,
-                strokeWidth: strokeWidth
+                strokeWidth: strokeWidth,
+                strokeUniform: true,
             })
             this.canvas.add(newRect)
             this._updateNewObjCreatedPosition()
@@ -131,7 +136,13 @@ export class Geometry {
             console.error('failed to bind transparency')
             return
         }
+        if (geometryOpacityValueLabel) {
+            geometryOpacityValueLabel.textContent = input.value
+        }
         input.addEventListener('input', (e) => {
+            if (geometryOpacityValueLabel) {
+                geometryOpacityValueLabel.textContent = input.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
             const opacity = parseInt(e.target.value) / 100
@@ -158,6 +169,9 @@ export class Geometry {
 
             this.canvas.renderAll()
         })
+
+        BindDivToRange(geometryOpacityValueLabel, input, 'int')
+
         input.disabled = false
     }
 
@@ -204,7 +218,13 @@ export class Geometry {
             console.error('failed to bind geometry stroke width')
             return
         }
+        if (geometryStrokeWidthValueLabel) {
+            geometryStrokeWidthValueLabel.textContent = input.value
+        }
         input.addEventListener('input', (e) => {
+            if (geometryStrokeWidthValueLabel) {
+                geometryStrokeWidthValueLabel.textContent = input.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
             const size = parseFloat(e.target.value)
@@ -221,6 +241,8 @@ export class Geometry {
 
             this.canvas.renderAll()
         })
+
+        BindDivToRange(geometryStrokeWidthValueLabel, input, 'float')
         this.strokeWidth = input
         input.disabled = false
     }
@@ -239,7 +261,13 @@ export class Geometry {
             return
         }
 
+        if (geometryRoundRectXValueLabel) {
+            geometryRoundRectXValueLabel.textContent = inputX.value
+        }
         inputX.addEventListener('input', (e) => {
+            if (geometryRoundRectXValueLabel) {
+                geometryRoundRectXValueLabel.textContent = inputX.value
+            }
             const active = this.canvas.getActiveObject()
 
             if (!active) { return }
@@ -259,7 +287,13 @@ export class Geometry {
             this.canvas.renderAll()
         })
 
+        if (geometryRoundRectYValueLabel) {
+            geometryRoundRectYValueLabel.textContent = inputY.value
+        }
         inputY.addEventListener('input', (e) => {
+            if (geometryRoundRectYValueLabel) {
+                geometryRoundRectYValueLabel.textContent = inputY.value
+            }
             const active = this.canvas.getActiveObject()
 
             if (!active) { return }
@@ -279,7 +313,14 @@ export class Geometry {
             this.canvas.renderAll()
         })
 
+        if (geometryRoundRectScaleValueLabel) {
+            geometryRoundRectScaleValueLabel.textContent = inputScale.value
+        }
         inputScale.addEventListener('input', (e) => {
+            if (geometryRoundRectScaleValueLabel) {
+                geometryRoundRectScaleValueLabel.textContent = inputScale.value
+            }
+
             const active = this.canvas.getActiveObject()
 
             if (!active) { return }
@@ -306,6 +347,10 @@ export class Geometry {
         this.roundRectY = inputY
         this.roundScale = inputScale
 
+        BindDivToRange(geometryRoundRectScaleValueLabel, inputScale, 'float')
+        BindDivToRange(geometryRoundRectYValueLabel, inputY, 'float')
+        BindDivToRange(geometryRoundRectXValueLabel, inputX, 'float')
+
         inputX.disabled = false
         inputY.disabled = false
         inputScale.disabled = false
@@ -330,5 +375,45 @@ export class Geometry {
         }
         this._newObjSpan.x += step
         this._newObjSpan.y += step
+    }
+
+    _onSelection(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        if (!e || !e.selected) { return }
+        if (e.selected.length > 1) {
+            SetControlGroupRangeLabelsVisibility(rangeLabelMap, true)
+            return
+        }
+        const selected = e.selected[0]
+        if (!selected) { return }
+        if (this._isGeometry(selected)) {
+            const fillColor = FromRGBAToHex(selected.fill)
+            geometryFillColor.value = fillColor
+
+            const fillTransparency = ExtractAlpha(selected.fill)
+            geometryFillTransparency.value = fillTransparency * 100
+            geometryFillTransparency.dispatchEvent(new Event('input'))
+
+            geometryStrokeWidth.value = selected.strokeWidth
+            geometryStrokeWidth.dispatchEvent(new Event('input'))
+
+            const strokeColor = FromRGBAToHex(selected.stroke)
+            geometryStrokeColor.value = strokeColor
+        }
+    }
+
+    _onSelectionCleared(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        SetControlGroupRangeLabelsVisibility(rangeLabelMap, false)
+    }
+
+    _getRangeLabelMap() {
+        const rangeLabelMap = [{ input: geometryFillTransparency, label: geometryOpacityValueLabel }
+            , { input: geometryStrokeWidth, label: geometryStrokeWidthValueLabel }
+            , { input: geometryRoundRectX, label: geometryRoundRectXValueLabel }
+            , { input: geometryRoundRectY, label: geometryRoundRectYValueLabel }
+            , { input: geometryRoundRectScale, label: geometryRoundRectScaleValueLabel }
+        ]
+        return rangeLabelMap
     }
 }

@@ -1,6 +1,9 @@
-import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity } from "./color.js"
+import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity, ExtractAlpha, FromRGBAToHex } from "./color.js"
+import { BindDivToRange, SetControlGroupRangeLabelsVisibility } from "./utils.js"
 
 export class TextEdit {
+    static IsEditingRangeValue = false
+
     constructor(canvas) {
         if (!canvas) {
             console.error('failed to initialze canvas toolbar: provided canvas is null')
@@ -8,6 +11,10 @@ export class TextEdit {
         }
         this.fonts = ['Montserrat-regular', 'Tataric2_0', 'Deutsch Gothic Regular', 'Helmswald']
         this.canvas = canvas
+
+        canvas.on('selection:created', (e) => { this._onSelection(e) })
+        canvas.on('selection:updated', (e) => { this._onSelection(e) })
+        canvas.on('selection:cleared', (e) => { this._onSelectionCleared(e) })
     }
 
     bindColorPicker(colorPickerId, textOpacityId) {
@@ -21,8 +28,13 @@ export class TextEdit {
             console.error('failed to bind color transparancy')
             return
         }
-
+        if (opacityValueLabel) {
+            opacityValueLabel.textContent = textOpacity.value
+        }
         textOpacity.addEventListener('input', (e) => {
+            if (opacityValueLabel) {
+                opacityValueLabel.textContent = e.currentTarget.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
             const opacity = parseInt(e.target.value) / 100
@@ -46,9 +58,10 @@ export class TextEdit {
                 const completeColor = ChangeRGBAOpacity(currentColor, opacity)
                 active.set('fill', completeColor)
             }
-
             this.canvas.renderAll()
         })
+
+        BindDivToRange(opacityValueLabel, textOpacity, 'int')
 
         picker.addEventListener('input', (e) => {
             const active = this.canvas.getActiveObject()
@@ -311,7 +324,13 @@ export class TextEdit {
             console.error('failed to bind font size element')
             return
         }
+        if (fontSizeValueLabel) {
+            fontSizeValueLabel.textContent = fontSizeInput.value
+        }
         fontSizeInput.addEventListener('input', (e) => {
+            if (fontSizeValueLabel) {
+                fontSizeValueLabel.textContent = fontSizeInput.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
 
@@ -330,6 +349,7 @@ export class TextEdit {
 
             this.canvas.renderAll()
         })
+        BindDivToRange(fontSizeValueLabel, fontSizeInput, 'int')
         fontSizeInput.disabled = false
         this.textFontSize = fontSizeInput
     }
@@ -425,8 +445,13 @@ export class TextEdit {
             console.error('failed to bind text stroke opacity')
             return
         }
-
+        if (txtStrokeOpacityValueLabel) {
+            txtStrokeOpacityValueLabel.textContent = strokeOpacity.value
+        }
         strokeOpacity.addEventListener('input', (e) => {
+            if (txtStrokeOpacityValueLabel) {
+                txtStrokeOpacityValueLabel.textContent = strokeOpacity.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
             const opacity = parseInt(e.target.value) / 100
@@ -453,6 +478,9 @@ export class TextEdit {
 
             this.canvas.renderAll()
         })
+
+        BindDivToRange(txtStrokeOpacityValueLabel, strokeOpacity, 'int')
+
         strokeOpacity.disabled = false
 
         const strokeWidth = document.getElementById(strokeOpacityWidthId)
@@ -460,8 +488,13 @@ export class TextEdit {
             console.error('failed to bind text stroke width')
             return
         }
-
+        if (txtStrokeWidthValueLabel) {
+            txtStrokeWidthValueLabel.textContent = strokeWidth.value
+        }
         strokeWidth.addEventListener('input', (e) => {
+            if (txtStrokeWidthValueLabel) {
+                txtStrokeWidthValueLabel.textContent = strokeWidth.value
+            }
             const active = this.canvas.getActiveObject()
             if (!active) { return }
             const size = parseFloat(e.target.value)
@@ -478,6 +511,9 @@ export class TextEdit {
 
             this.canvas.renderAll()
         })
+
+        BindDivToRange(txtStrokeWidthValueLabel, strokeWidth, 'float')
+
         strokeWidth.disabled = false
 
         this.textStrokeColor = colorPicker
@@ -487,6 +523,8 @@ export class TextEdit {
 
     addText(text) {
         const txtFillColor = FromHexToRGBA(this.textFillColor.value)
+        const txtOpacity = parseInt(this.textTransperancy.value) / 100
+        const completeFillColor = ChangeRGBAOpacity(txtFillColor, txtOpacity)
         const strokeWidth = parseFloat(this.textStrokeWidth.value)
         const strokeOpacity = parseFloat(this.textStrokeOpacity.value) / 100
         const strokeColor = FromHexToRGBA(this.textStrokeColor.value, strokeOpacity)
@@ -506,7 +544,7 @@ export class TextEdit {
             top: 50,
             width: 90,
             fontSize: this.textFontSize.value,
-            fill: txtFillColor,
+            fill: completeFillColor,
             stroke: strokeColor,
             strokeWidth: strokeWidth,
             fontFamily: font,
@@ -530,4 +568,45 @@ export class TextEdit {
         await button.toggle()
     }
 
+    _onSelection(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        if (!e || !e.selected) { return }
+        if (e.selected.length > 1) {
+            SetControlGroupRangeLabelsVisibility(rangeLabelMap, true)
+            return
+        }
+        const selected = e.selected[0]
+        if (!selected) { return }
+        if (selected.type.includes('text')) {
+            this.textFontSize.value = selected.fontSize
+            this.textFontSize.dispatchEvent(new Event('input'))
+
+            this.textStrokeWidth.value = selected.strokeWidth
+            this.textStrokeWidth.dispatchEvent(new Event('input'))
+
+            const textOpacity = ExtractAlpha(selected.fill)
+            this.textTransperancy.value = textOpacity * 100
+            this.textTransperancy.dispatchEvent(new Event('input'))
+
+            const textColor = FromRGBAToHex(selected.fill)
+            this.textFillColor.value = textColor
+
+            const strokeColor = FromRGBAToHex(selected.stroke)
+            this.textStrokeColor.value = strokeColor
+        }
+    }
+
+    _onSelectionCleared(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        SetControlGroupRangeLabelsVisibility(rangeLabelMap, false)
+    }
+
+    _getRangeLabelMap() {
+        const rangeLabelMap = [{ input: this.textStrokeOpacity, label: txtStrokeOpacityValueLabel }
+            , { input: this.textStrokeWidth, label: txtStrokeWidthValueLabel }
+            , { input: this.textFontSize, label: fontSizeValueLabel }
+            , { input: this.textTransperancy, label: opacityValueLabel }
+        ]
+        return rangeLabelMap
+    }
 }
