@@ -11,7 +11,7 @@ export function BindDivToRange(divLabel, range, rangeValueType) {
 
     divLabel.addEventListener('blur', (e) => {
         const targetDiv = e.currentTarget
-        const value = rangeValueType === 'int' 
+        const value = rangeValueType === 'int'
             ? parseInt(targetDiv.textContent)
             : parseFloat(targetDiv.textContent)
 
@@ -26,4 +26,15 @@ export function BindDivToRange(divLabel, range, rangeValueType) {
         targetDiv.classList.remove('form-control', 'form-control-sm')
         IsEditingRange = false
     })
+}
+
+export function SetControlGroupRangeLabelsVisibility(rangeLabelMap, value) {
+    if (!rangeLabelMap || !rangeLabelMap.size === 0) {
+        console.error('passed undefined or zero map')
+        return
+    }
+    rangeLabelMap.forEach(({ input, label }) => {
+        if (!label) { return; }
+        label.classList.toggle('d-none', value);
+    });
 }

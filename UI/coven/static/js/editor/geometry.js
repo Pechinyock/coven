@@ -1,5 +1,5 @@
-import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity } from "./color.js"
-import { BindDivToRange } from "./utils.js"
+import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity, ExtractAlpha, FromRGBAToHex } from "./color.js"
+import { BindDivToRange, SetControlGroupRangeLabelsVisibility } from "./utils.js"
 
 export class Geometry {
     constructor(canvas) {
@@ -12,6 +12,9 @@ export class Geometry {
             x: 50,
             y: 50,
         }
+        canvas.on('selection:created', (e) => { this._onSelection(e) })
+        canvas.on('selection:updated', (e) => { this._onSelection(e) })
+        canvas.on('selection:cleared', (e) => { this._onSelectionCleared(e) })
     }
 
     bindCreateRect(btn) {
@@ -372,5 +375,45 @@ export class Geometry {
         }
         this._newObjSpan.x += step
         this._newObjSpan.y += step
+    }
+
+    _onSelection(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        if (!e || !e.selected) { return }
+        if (e.selected.length > 1) {
+            SetControlGroupRangeLabelsVisibility(rangeLabelMap, true)
+            return
+        }
+        const selected = e.selected[0]
+        if (!selected) { return }
+        if (this._isGeometry(selected)) {
+            const fillColor = FromRGBAToHex(selected.fill)
+            geometryFillColor.value = fillColor
+
+            const fillTransparency = ExtractAlpha(selected.fill)
+            geometryFillTransparency.value = fillTransparency * 100
+            geometryFillTransparency.dispatchEvent(new Event('input'))
+
+            geometryStrokeWidth.value = selected.strokeWidth
+            geometryStrokeWidth.dispatchEvent(new Event('input'))
+
+            const strokeColor = FromRGBAToHex(selected.stroke)
+            geometryStrokeColor.value = strokeColor
+        }
+    }
+
+    _onSelectionCleared(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        SetControlGroupRangeLabelsVisibility(rangeLabelMap, false)
+    }
+
+    _getRangeLabelMap() {
+        const rangeLabelMap = [{ input: geometryFillTransparency, label: geometryOpacityValueLabel }
+            , { input: geometryStrokeWidth, label: geometryStrokeWidthValueLabel }
+            , { input: geometryRoundRectX, label: geometryRoundRectXValueLabel }
+            , { input: geometryRoundRectY, label: geometryRoundRectYValueLabel }
+            , { input: geometryRoundRectScale, label: geometryRoundRectScaleValueLabel }
+        ]
+        return rangeLabelMap
     }
 }

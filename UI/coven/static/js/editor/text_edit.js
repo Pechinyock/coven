@@ -1,5 +1,5 @@
-import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity } from "./color.js"
-import { BindDivToRange } from "./utils.js"
+import { FromHexToRGBA, IsHexFormat, GetOpacityFromRGBA, ChangeRGBAOpacity, ExtractAlpha, FromRGBAToHex } from "./color.js"
+import { BindDivToRange, SetControlGroupRangeLabelsVisibility } from "./utils.js"
 
 export class TextEdit {
     static IsEditingRangeValue = false
@@ -11,6 +11,10 @@ export class TextEdit {
         }
         this.fonts = ['Montserrat-regular', 'Tataric2_0', 'Deutsch Gothic Regular', 'Helmswald']
         this.canvas = canvas
+
+        canvas.on('selection:created', (e) => { this._onSelection(e) })
+        canvas.on('selection:updated', (e) => { this._onSelection(e) })
+        canvas.on('selection:cleared', (e) => { this._onSelectionCleared(e) })
     }
 
     bindColorPicker(colorPickerId, textOpacityId) {
@@ -552,31 +556,6 @@ export class TextEdit {
         this.canvas.add(txt)
     }
 
-    _bindRangeFloatValueLabel(divLabel, range) {
-        divLabel.addEventListener('dblclick', (e) => {
-            TextEdit.IsEditingRangeValue = true
-            const targetDiv = e.currentTarget
-            targetDiv.contentEditable = true
-            targetDiv.focus()
-            targetDiv.classList.add('form-control', 'form-control-sm')
-        })
-
-        divLabel.addEventListener('blur', (e) => {
-            const targetDiv = e.currentTarget
-            const value = parseFloat(targetDiv.textContent)
-
-            if (!isNaN(value) && value >= range.min && value <= range.max) {
-                range.value = value
-                range.dispatchEvent(new Event('input'))
-            } else {
-                targetDiv.textContent = range.value
-            }
-            targetDiv.contentEditable = false
-            targetDiv.classList.remove('form-control', 'form-control-sm')
-            TextEdit.IsEditingRangeValue = false
-        })
-    }
-
     _getIsAreaPressed(element) {
         if (!element) { return false }
         const attrib = element.getAttribute('aria-pressed')
@@ -589,4 +568,45 @@ export class TextEdit {
         await button.toggle()
     }
 
+    _onSelection(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        if (!e || !e.selected) { return }
+        if (e.selected.length > 1) {
+            SetControlGroupRangeLabelsVisibility(rangeLabelMap, true)
+            return
+        }
+        const selected = e.selected[0]
+        if (!selected) { return }
+        if (selected.type.includes('text')) {
+            this.textFontSize.value = selected.fontSize
+            this.textFontSize.dispatchEvent(new Event('input'))
+
+            this.textStrokeWidth.value = selected.strokeWidth
+            this.textStrokeWidth.dispatchEvent(new Event('input'))
+
+            const textOpacity = ExtractAlpha(selected.fill)
+            this.textTransperancy.value = textOpacity * 100
+            this.textTransperancy.dispatchEvent(new Event('input'))
+
+            const textColor = FromRGBAToHex(selected.fill)
+            this.textFillColor.value = textColor
+
+            const strokeColor = FromRGBAToHex(selected.stroke)
+            this.textStrokeColor.value = strokeColor
+        }
+    }
+
+    _onSelectionCleared(e) {
+        const rangeLabelMap = this._getRangeLabelMap()
+        SetControlGroupRangeLabelsVisibility(rangeLabelMap, false)
+    }
+
+    _getRangeLabelMap() {
+        const rangeLabelMap = [{ input: this.textStrokeOpacity, label: txtStrokeOpacityValueLabel }
+            , { input: this.textStrokeWidth, label: txtStrokeWidthValueLabel }
+            , { input: this.textFontSize, label: fontSizeValueLabel }
+            , { input: this.textTransperancy, label: opacityValueLabel }
+        ]
+        return rangeLabelMap
+    }
 }

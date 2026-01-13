@@ -27,3 +27,23 @@ export function ChangeRGBAOpacity(rgbaString, newOpacity) {
         `rgba($1, ${newOpacity})`
     );
 }
+
+export function FromRGBAToHex(rgba) {
+    const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)/);
+
+    if (match) {
+        const r = match[1];
+        const g = match[2];
+        const b = match[3];
+
+        return "#" + ((1 << 24) + (+r << 16) + (+g << 8) + +b).toString(16).slice(1);
+    }
+}
+
+export function ExtractAlpha(rgba) {
+    const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)/);
+    if (match) {
+        const alpha = match[4] || '1'
+        return alpha
+    }
+}
