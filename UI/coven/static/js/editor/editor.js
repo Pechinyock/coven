@@ -3,6 +3,7 @@ import { ObjectsOreder } from "./objects_ordering.js";
 import { ControlMenu } from "./control_menu.js";
 import { Geometry } from "./geometry.js";
 import { IsEditingRange } from "./utils.js";
+import { Positioning } from "./positioning.js";
 
 class Editor {
     constructor(canvasId) {
@@ -17,6 +18,7 @@ class Editor {
         this._initObjectOrdering()
         this._initControlMenu()
         this._initGeometry()
+        this._initPositioning()
 
         const urlParams = new URLSearchParams(window.location.search)
         if (!urlParams || urlParams.size === 0) {
@@ -136,6 +138,11 @@ class Editor {
         this.geometry = geometry
     }
 
+    _initPositioning() {
+        const pos = new Positioning(this.canvas)
+        pos.bindCoords(objectPosX, objectPosY)
+    }
+
     _initObjectOrdering() {
         this.objectOrdering = new ObjectsOreder(this.canvas)
     }
@@ -161,7 +168,7 @@ class Editor {
             if (e.key === 'Delete') {
                 this.canvas.fire('selection:updated')
                 this.canvas.fire('selection:cleared')
-                if (ObjectsOreder.IsEditingObjId || IsEditingRange) {
+                if (ObjectsOreder.IsEditingObjId || IsEditingRange || Positioning.IsEditing) {
                     return
                 }
                 if (active) {

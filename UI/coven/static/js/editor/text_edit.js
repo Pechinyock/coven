@@ -49,7 +49,7 @@ export class TextEdit {
                         const completeColor = ChangeRGBAOpacity(currentColor, opacity)
                         obj.set('fill', completeColor)
                     }
-                });
+                })
             } else if (active.type.includes('text')) {
                 let currentColor = active.get('fill')
                 if (IsHexFormat(currentColor)) {
@@ -78,7 +78,7 @@ export class TextEdit {
                     if (obj.type.includes('text')) {
                         obj.set('fill', targetColor)
                     }
-                });
+                })
             } else if (active.type.includes('text')) {
                 let currentColor = active.get('fill')
                 if (IsHexFormat(currentColor)) {
@@ -342,7 +342,7 @@ export class TextEdit {
                     if (obj.type.includes('text')) {
                         obj.set('fontSize', size)
                     }
-                });
+                })
             } else if (active.type.includes('text')) {
                 active.set('fontSize', size)
             }
