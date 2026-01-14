@@ -4,6 +4,7 @@ import { ControlMenu } from "./control_menu.js";
 import { Geometry } from "./geometry.js";
 import { IsEditingRange } from "./utils.js";
 import { Positioning } from "./positioning.js";
+import { ImagePool } from "./image_pool.js";
 
 class Editor {
     constructor(canvasId) {
@@ -19,6 +20,7 @@ class Editor {
         this._initControlMenu()
         this._initGeometry()
         this._initPositioning()
+        this._initImgPool()
 
         const urlParams = new URLSearchParams(window.location.search)
         if (!urlParams || urlParams.size === 0) {
@@ -141,6 +143,11 @@ class Editor {
     _initPositioning() {
         const pos = new Positioning(this.canvas)
         pos.bindCoords(objectPosX, objectPosY)
+    }
+
+    _initImgPool(){
+        const imgPool = new ImagePool(this.canvas)
+        imgPool.bindTestButton(testButton)
     }
 
     _initObjectOrdering() {
