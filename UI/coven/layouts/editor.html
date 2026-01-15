@@ -32,9 +32,6 @@
                 <button class="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#modal">Сохранить</button>
             </div>
-            <div class="col-1">
-                <button class="btn btn-primary" id="testButton">Тест</button>
-            </div>
         </section>
         <section class="row">
             <div class="col-4">
@@ -71,6 +68,41 @@
                                         disabled>
                                 </div>
                             </div>
+                            <div class="row align-items-center g-2">
+                                <div class="col-auto">
+                                    <label for="objectRotation">Поворот:</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" min="0" max="360"
+                                        value="0" id="objectRotation"
+                                        class="form-control form-control-sm"
+                                        disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-images">
+                            Картинки
+                        </button>
+                    </div>
+                    <div id="collapse-images"
+                        class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-1">
+                                    <button class="btn btn-primary"
+                                        id="addFromLocal"
+                                        disabled>Добавить</button>
+                                </div>
+                            </div>
+                            <div hx-get="/ui/image-pool/characters"
+                                hx-trigger="load" hx-target="#images"
+                                hx-swap="innerHTML">
+                            </div>
+                            <div class="row mt-3" id="images"></div>
                         </div>
                     </div>
                     <div class="accordion-header">

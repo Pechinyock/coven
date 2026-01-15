@@ -143,11 +143,13 @@ class Editor {
     _initPositioning() {
         const pos = new Positioning(this.canvas)
         pos.bindCoords(objectPosX, objectPosY)
+        pos.bindRotation(objectRotation)
     }
 
-    _initImgPool(){
+    _initImgPool() {
         const imgPool = new ImagePool(this.canvas)
-        imgPool.bindTestButton(testButton)
+        imgPool.bindAddImageFromLocal(addFromLocal)
+        this.imagePool = imgPool
     }
 
     _initObjectOrdering() {
