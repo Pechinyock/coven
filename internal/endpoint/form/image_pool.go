@@ -66,7 +66,7 @@ func uploadImage(w http.ResponseWriter, r *http.Request) {
 	if overrideName == "" {
 		fileName = handler.Filename
 	} else {
-		fileName = fmt.Sprintf("%s.%s", overrideName, ext)
+		fileName = fmt.Sprintf("%s%s", overrideName, ext)
 	}
 	if !utils.IsValidPath(fileName) {
 		webui.SendFailed(w, `Недопустимые символы в имени файла. Убедитесь, что название не содержит: < > : \" | ? *`)
