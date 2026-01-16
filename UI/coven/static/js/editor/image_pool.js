@@ -30,6 +30,33 @@ export class ImagePool {
         button.disabled = false
     }
 
+    onNewImageUploaded() {
+        if (!cardTypeSelector) {
+            console.error('failed to find card type selector')
+            return
+        }
+        const currentSelectedType = cardTypeSelector.value
+        if (!currentSelectedType) {
+            console.error('failed to get selecet card type')
+            return
+        }
+        const url = `/ui/image-pool/${currentSelectedType}`
+        setTimeout(() => {
+            htmx.ajax('GET', url, {
+                target: '#images',
+                swap: 'innerHTML'
+            })
+        }, 2000)
+    }
+
+    onCardTypeChanged(selected) {
+        const url = `/ui/image-pool/${selected}`
+        htmx.ajax('GET', url, {
+            target: '#images',
+            swap: 'innerHTML'
+        })
+    }
+
     onImageClicked(img) {
         const selectedBorderStyle = '2px solid rgb(3, 252, 78)'
         if (!this.selectedLocalImage) {

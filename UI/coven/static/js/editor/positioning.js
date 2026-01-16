@@ -11,11 +11,13 @@ export class Positioning {
         canvas.on('object:rotating', (e) => {
             this._onRotating(e)
         })
+        canvas.on('object:scaling', (e) => {
+            this._onSizeUpdated(e)
+        })
         canvas.on('object:modified', (e) => {
             this._onMoving(e)
             clearTimeout(this.updateTimeout)
         })
-        
     }
 
     bindCoords(posXInput, posYInput) {
@@ -88,6 +90,65 @@ export class Positioning {
         rotationInput.disabled = false
     }
 
+    bindScale(scaleInput) {
+        if (!scaleInput) {
+            console.error('failed to bund scale')
+            return
+        }
+
+        scaleInput.addEventListener('focus', () => { this._setEditing(true) })
+        scaleInput.addEventListener('blur', () => { this._setEditing(false) })
+        scaleInput.addEventListener('change', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) { return }
+            if (active.type === 'activeSelection') { return }
+            else {
+                const parsedScalePresents = parseFloat(scaleInput.value)
+                const multiplier = parsedScalePresents / 100
+                active.scale(multiplier)
+                this.canvas.renderAll()
+            }
+        })
+
+        scaleInput.disabled = false
+    }
+
+    bindSize(inputX, inputY) {
+        if (!inputX || !inputY) {
+            console.error('failed to bind object sizing')
+            return
+        }
+
+        inputX.addEventListener('focus', () => { this._setEditing(true) })
+        inputX.addEventListener('blur', () => { this._setEditing(false) })
+        inputX.addEventListener('change', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) { return }
+            if (active.type === 'activeSelection') { return }
+            else {
+                const parsedX = parseFloat(inputX.value)
+                active.set('width', parsedX)
+                this.canvas.renderAll()
+            }
+        })
+
+        inputY.addEventListener('focus', () => { this._setEditing(true) })
+        inputY.addEventListener('blur', () => { this._setEditing(false) })
+        inputY.addEventListener('change', () => {
+            const active = this.canvas.getActiveObject()
+            if (!active) { return }
+            if (active.type === 'activeSelection') { return }
+            else {
+                const parsedY = parseFloat(inputY.value)
+                active.set('height', parsedY)
+                this.canvas.renderAll()
+            }
+        })
+
+        inputY.disabled = true
+        inputX.disabled = true
+    }
+
     convertCoords(x, y) {
         const height = this.canvas.height
         return {
@@ -102,11 +163,14 @@ export class Positioning {
             objectPosX.disabled = true
             objectPosY.disabled = true
             objectRotation.disabled = true
+            objectSizeX.disabled = true
+            objectSizeY.disabled = true
             return
         }
         const singleSelected = e.selected[0]
         this._updateCoords(singleSelected)
         this._updateRotation(singleSelected)
+        this._updateSize(singleSelected)
     }
 
     _onSelectionCleared(e) {
@@ -117,6 +181,8 @@ export class Positioning {
         objectPosX.value = 0
         objectPosY.value = 0
         objectRotation.value = 0
+        objectSizeX.value = 0
+        objectSizeY.value = 0
     }
 
     _onMoving(e) {
@@ -136,6 +202,21 @@ export class Positioning {
         this.updateTimeout = setTimeout(() => {
             this._updateRotation(obj)
         }, about60FPS)
+    }
+
+    _onSizeUpdated(e) {
+        if (!e) { return }
+        const about60FPS = 16
+        this.updateTimeout = setTimeout(() => {
+            this._updateSize(e.target)
+        }, about60FPS)
+    }
+
+    _updateSize(obj) {
+        const objSizeX = obj.getScaledWidth()
+        const objSizeY = obj.getScaledHeight()
+        objectSizeX.value = objSizeX.toFixed(1)
+        objectSizeY.value = objSizeY.toFixed(1)
     }
 
     _updateRotation(obj) {

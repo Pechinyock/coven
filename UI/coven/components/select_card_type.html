@@ -1,0 +1,6 @@
+<select name="cardGroup" id="cardTypeSelector" class="form-select"
+    onchange="editor.imagePool.onCardTypeChanged(this.value)">
+    {{ range $key, $value := . }}
+    <option value="{{$key}}">{{$value}}</option>
+    {{ end }}
+</select>

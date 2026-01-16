@@ -144,6 +144,8 @@ class Editor {
         const pos = new Positioning(this.canvas)
         pos.bindCoords(objectPosX, objectPosY)
         pos.bindRotation(objectRotation)
+        pos.bindSize(objectSizeX, objectSizeY)
+        pos.bindScale(scaleMultiplier)
     }
 
     _initImgPool() {

@@ -122,8 +122,7 @@ func GetUIEndpoints() []endpoint.Endpoint {
 				}
 				if prewiewData == nil {
 					slog.Info("there's no images to display")
-					w.WriteHeader(http.StatusNoContent)
-					w.Write([]byte("Картинки данного типа еще не загружены"))
+					w.Write([]byte("<p>Картинки данного типа еще не загружены</p>"))
 					return
 				}
 				baseUriPath := shareddirs.ImagePoolDirPath.Uri
@@ -252,6 +251,13 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			Methods: []string{"GET"},
 			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
 				UIBundle.Render("card_types_selection", w, cards.CardTypes)
+			},
+		},
+		{
+			Path:    "/ui/card-type-select",
+			Methods: []string{"GET"},
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				UIBundle.Render("select_card_type", w, cards.CardTypes)
 			},
 		},
 	}

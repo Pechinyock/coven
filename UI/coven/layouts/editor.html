@@ -13,6 +13,7 @@
     <script src="assets/js/lib/htmx-ext-response-targets.min.js" defer></script>
     <script src="assets/js/lib/bootstrap.bundle.min.js" defer></script>
     <script src="assets/js/lib/fabric.js" defer></script>
+    <script src="assets/js/modal.js" defer></script>
     <script type="module" src="assets/js/editor/utils.js" defer></script>
     <script type="module" src="assets/js/editor/editor.js" defer></script>
     <script type="module" src="assets/js/editor/text_edit.js" defer></script>
@@ -68,8 +69,8 @@
                                         disabled>
                                 </div>
                             </div>
-                            <div class="row align-items-center g-2">
-                                <div class="col-auto">
+                            <div class="row align-items-center g-2 mt-1">
+                                <div class="col-auto ">
                                     <label for="objectRotation">Поворот:</label>
                                 </div>
                                 <div class="col-4">
@@ -78,6 +79,38 @@
                                         class="form-control form-control-sm"
                                         disabled>
                                 </div>
+                            </div>
+                            <div class="row align-enter g-2 mt-1">
+                                <div class="col-auto">
+                                    <label for="objectSizeX">Ширина:</label>
+                                </div>
+                                <div class="col">
+                                    <input type="number" min="0" value="0"
+                                        id="objectSizeX"
+                                        class="form-control form-control-sm"
+                                        disabled>
+                                </div>
+                                <div class="col-auto">
+                                    <label for="objectSizeY">Высота:</label>
+                                </div>
+                                <div class="col">
+                                    <input type="number" min="0" value="0"
+                                        id="objectSizeY"
+                                        class="form-control form-control-sm"
+                                        disabled>
+                                </div>
+                            </div>
+                            <div class="row align-enter g-2 mt-1">
+                                <div class="col-auto">
+                                    <label for="scaleMultipier">Размер:</label>
+                                </div>
+                                <div class="col">
+                                    <input type="number" min="0" value="0"
+                                        id="scaleMultiplier"
+                                        class="form-control form-control-sm"
+                                        disabled>
+                                </div>
+                                <div class="col">%</div>
                             </div>
                         </div>
                     </div>
@@ -92,10 +125,24 @@
                         class="accordion-collapse collapse show">
                         <div class="accordion-body">
                             <div class="row">
-                                <div class="col-1">
+                                <div class="col-auto">
                                     <button class="btn btn-primary"
                                         id="addFromLocal"
                                         disabled>Добавить</button>
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#addImgModal">
+                                        <i
+                                            class="bi bi-file-earmark-arrow-up-fill">
+                                        </i>
+                                    </button>
+                                </div>
+                                <div hx-get="/ui/card-type-select"
+                                    hx-trigger="load" hx-swap="innerHTML"
+                                    hx-target="#selectCardContainer"></div>
+                                <div class="col mt-2" id="selectCardContainer">
                                 </div>
                             </div>
                             <div hx-get="/ui/image-pool/characters"
@@ -427,7 +474,67 @@
             </div>
         </div>
     </div>
+    <!-- add image modal -->
+    <div class="modal fade modal-lg" id="addImgModal" data-bs-backdrop="static"
+        tabindex="-1" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"></h1>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <section class="container-fluid">
+                        <div class="row">
+                            <form hx-post="/form/image"
+                                hx-target="#result-message" hx-swap="innerHTML"
+                                hx-encoding="multipart/form-data">
+                                <div class="form-group row">
+                                    <div hx-get="/ui/card-types"
+                                        hx-target="#imgType" hx-swap="innerHTML"
+                                        hx-trigger="load">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12" id="imgType">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="file-name">Имя файла (не
+                                            обязательно)</label>
+                                        <input class="form-control" type="text"
+                                            name="file-name"
+                                            title="Если оставить пустым имя будет браться из файла, который был выбран">
+                                    </div>
 
+                                    <div class="mb-3">
+                                        <label for="file">Картинка для
+                                            персонажа</label>
+                                        <input class="form-control" type="file"
+                                            name="file"
+                                            title="Если оставить пустым имя будет браться из файла, который был выбран">
+                                    </div>
+
+                                    <div class="container">
+                                        <div
+                                            class="row justify-content-center align-items-center">
+                                            <div class="row">
+                                                <button class="btn btn-primary"
+                                                    type="submit"
+                                                    onclick="editor.imagePool.onNewImageUploaded()">Добавить</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-12 my-2" id="result-message">
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
