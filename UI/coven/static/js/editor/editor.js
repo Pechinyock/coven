@@ -5,14 +5,15 @@ import { Geometry } from "./geometry.js";
 import { IsEditingRange } from "./utils.js";
 import { Positioning } from "./positioning.js";
 import { ImagePool } from "./image_pool.js";
+import { UtilsPanel } from "./utils_panel.js";
 
 class Editor {
     constructor(canvasId) {
         this.canvas = new fabric.Canvas(canvasId)
         this.elementsIncrementer = this.canvas.size()
 
-        this.setBgColor('#ffffffff')
-        this.setSize(600, 800)
+        this.setBgCheckerboard(50)
+        this.setSize(860, 1100)
         this._initTextEdit()
         this._initCanvasEvents()
         this._initKeyEvents()
@@ -21,6 +22,8 @@ class Editor {
         this._initGeometry()
         this._initPositioning()
         this._initImgPool()
+        setTimeout(() => { this._initUtilPanel() }, 100)
+
 
         const urlParams = new URLSearchParams(window.location.search)
         if (!urlParams || urlParams.size === 0) {
@@ -48,8 +51,26 @@ class Editor {
     setBgColor(color) {
         this.canvas.set({
             backgroundColor: color
-        });
+        })
         this.canvas.renderAll();
+    }
+
+    setBgCheckerboard(cellSize) {
+        const patternCanvas = document.createElement('canvas')
+        patternCanvas.width = cellSize * 2
+        patternCanvas.height = cellSize * 2
+        const ctx = patternCanvas.getContext('2d')
+
+        ctx.fillStyle = '#e0e0e0'
+        ctx.fillRect(0, 0, cellSize, cellSize)
+        ctx.fillRect(cellSize, cellSize, cellSize, cellSize)
+        const pattern = new fabric.Pattern({
+            source: patternCanvas,
+            repeat: 'repeat'
+        })
+
+        this.canvas.backgroundColor = pattern
+        this.canvas.renderAll()
     }
 
     setSize(width, height) {
@@ -62,8 +83,8 @@ class Editor {
         try {
             const response = await fetch(`/card?cardType=${type}&cardName=${name}`)
             const editingData = await response.json()
-
             this.canvas.loadFromJSON(editingData, () => {
+                this.setBgCheckerboard(50)
                 this.canvas.renderAll();
             }, (jsonObj, fabricObj) => {
                 if (jsonObj.id) {
@@ -140,6 +161,13 @@ class Editor {
         this.geometry = geometry
     }
 
+    _initUtilPanel() {
+        const utilPanel = new UtilsPanel(this.canvas)
+        utilPanel.bindCardEdges(cardEdgesToggle)
+        utilPanel.initCardEdges()
+        this.utilPanel = utilPanel
+    }
+
     _initPositioning() {
         const pos = new Positioning(this.canvas)
         pos.bindCoords(objectPosX, objectPosY)
@@ -162,6 +190,7 @@ class Editor {
         this.canvas.on('object:added', (e) => {
             const newElementId = `${e.target.type}_${this.elementsIncrementer++}`
             const currentId = e.target.get('id')
+            if (!e.target.selectable) { return }
             if (!currentId) {
                 e.target.set('id', newElementId)
             }

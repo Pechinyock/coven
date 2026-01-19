@@ -102,13 +102,33 @@ export class ControlMenu {
             return
         }
 
-        const dataAsURL = this.canvas.toDataURL('png')
-        const base64Data = dataAsURL.split(',')[1]
-        const json = JSON.stringify(this.canvas.toJSON(['id']))
+        const left = 100.0
+        const top = 100.0
+        const cropWidth = 660.0
+        const cropHeight = 900.0
 
+        this.canvas.set({
+            backgroundColor: 'transparent'
+        })
+        this.canvas.renderAll()
+
+        const dataAsURL = this.canvas.toDataURL({
+            format: 'png',
+            left: left,
+            top: top,
+            width: cropWidth,
+            height: cropHeight
+        })
+        const base64Data = dataAsURL.split(',')[1]
+        const canvasData = this.canvas.toJSON(['id'])
+        canvasData.objects = canvasData.objects.filter(obj =>
+            !(obj.id && obj.id.startsWith('unsave_'))
+        )
+        const json = JSON.stringify(canvasData)
         jsonDataInput.value = json
         pngDataInput.value = base64Data
 
         form.dispatchEvent(new Event('saveCanvasEvent'))
+        window.editor.setBgCheckerboard(50)
     }
 }

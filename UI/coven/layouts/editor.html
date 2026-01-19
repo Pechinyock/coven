@@ -15,6 +15,7 @@
     <script src="assets/js/lib/fabric.js" defer></script>
     <script src="assets/js/modal.js" defer></script>
     <script type="module" src="assets/js/editor/utils.js" defer></script>
+    <script type="module" src="assets/js/editor/utils_panel.js" defer></script>
     <script type="module" src="assets/js/editor/editor.js" defer></script>
     <script type="module" src="assets/js/editor/text_edit.js" defer></script>
     <script type="module" src="assets/js/editor/color.js" defer></script>
@@ -34,8 +35,15 @@
                     data-bs-target="#modal">Сохранить</button>
             </div>
         </section>
+        <hr>
         <section class="row">
-            <div class="col-4">
+            <div class="col-1">
+                <button class="btn btn-primary" id="cardEdgesToggle"><i
+                        class="bi bi-square"></i></button>
+            </div>
+        </section>
+        <section class="row">
+            <div class="col-3">
                 <div class="accordion accordion-flush mt-4">
                     <div class="accordion-header">
                         <button class="accordion-button" type="button"
@@ -415,7 +423,9 @@
             </div>
             <div class="col">
                 <div class="row justify-content-center align-items-center">
-                    <canvas id="card-canvas"></canvas>
+                    <div class="grid-overlay">
+                        <canvas id="card-canvas"></canvas>
+                    </div>
                 </div>
             </div>
             <div class="col">

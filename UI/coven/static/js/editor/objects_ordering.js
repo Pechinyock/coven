@@ -13,6 +13,9 @@ export class ObjectsOreder {
 
         }
         canvas.on('object:added', (e) => {
+            if (!e.target.selectable) {
+                return
+            }
             const id = e.target.get('id')
             if (!id) {
                 console.error('trying to add element with no id')
@@ -28,10 +31,7 @@ export class ObjectsOreder {
                 return
             }
             const viewObj = document.getElementById(id)
-            if (!viewObj) {
-                console.error(`failed to to sync deleted element ${id}`)
-                return
-            }
+            if (!viewObj) { return }
             viewObj.remove()
         })
 
