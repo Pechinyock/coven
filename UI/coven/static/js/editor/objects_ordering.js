@@ -8,20 +8,16 @@ export class ObjectsOreder {
             console.error('failed to init layer objects-ordering')
             return
         }
-        const objs = canvas.getObjects()
-        if (objs && objs.size > 0) {
-
-        }
         canvas.on('object:added', (e) => {
-            if (!e.target.selectable) {
-                return
-            }
-            const id = e.target.get('id')
-            if (!id) {
+            const obj = e.target
+            if (!obj.id) {
                 console.error('trying to add element with no id')
                 return
             }
-            this._appendNewElement(id)
+            if (obj.id.startsWith('unsave_')) {
+                return
+            }
+            this._appendNewElement(obj)
         })
 
         canvas.on('object:removed', (e) => {
@@ -117,10 +113,11 @@ export class ObjectsOreder {
         elementRootDiv.remove()
     }
 
-    _appendNewElement(elementId) {
+    _appendNewElement(obj) {
         const delIco = this._getIco('bi-trash3')
         const arrowUp = this._getIco('bi-arrow-bar-up')
         const arrowDown = this._getIco('bi-arrow-bar-down')
+        const lockIco = obj.selectable ? this._getIco('bi-unlock2-fill') : this._getIco('bi-lock-fill')
 
         const delBtn = document.createElement('button')
         delBtn.classList.add('btn', 'btn-danger', 'btn-sm')
@@ -137,15 +134,24 @@ export class ObjectsOreder {
         moveDownBtn.appendChild(arrowDown)
         moveDownBtn.addEventListener('click', (e) => this._moveElementHandler(e, 'down'))
 
+        const lockBtn = document.createElement('button')
+        lockBtn.classList.add('btn', 'btn-sm', 'me-1')
+        const toggleBtnStyle = obj.selectable ? 'btn-outline-primary' : 'btn-primary'
+        lockBtn.classList.add(toggleBtnStyle)
+        lockBtn.id = `lock-${obj.id}`
+        lockBtn.appendChild(lockIco)
+        lockBtn.addEventListener('click', (e) => this._lockElement(e))
+
         const controlsWrapper = document.createElement('div')
         controlsWrapper.classList.add('d-flex', 'justify-content-end')
+        controlsWrapper.appendChild(lockBtn)
         controlsWrapper.appendChild(moveUpBtn)
         controlsWrapper.appendChild(moveDownBtn)
         controlsWrapper.appendChild(delBtn)
 
         const labelDiv = document.createElement('div')
-        labelDiv.textContent = elementId
-        labelDiv.id = `lb-${elementId}`
+        labelDiv.textContent = obj.id
+        labelDiv.id = `lb-${obj.id}`
         labelDiv.classList.add('object-label')
         labelDiv.addEventListener('click', (e) => this._selectObject(e))
         labelDiv.addEventListener('dblclick', (e) => this._editObjectId(e))
@@ -153,11 +159,69 @@ export class ObjectsOreder {
 
         const elementDiv = document.createElement('div')
         elementDiv.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mt-1', 'object-view-element')
-        elementDiv.id = elementId
+        elementDiv.id = obj.id
         elementDiv.appendChild(labelDiv)
         elementDiv.appendChild(controlsWrapper)
 
         this.elementsContainer.prepend(elementDiv)
+    }
+
+    _lockElement(btn) {
+        const clickedLockBtn = btn.currentTarget
+        const targetElement = clickedLockBtn.parentElement.parentElement
+        if (!targetElement || targetElement.id == '') {
+            console.error('failed to get parent of label')
+            return
+        }
+        const objId = targetElement.id
+        const canvasObjs = this.canvas.getObjects()
+        const targetObj = canvasObjs.find(x => x.id === objId)
+        if (!targetObj) {
+            console.error('failed to lock object')
+            return
+        }
+
+        if (targetObj.type === 'textbox') {
+            if (targetObj.isEditing) {
+                targetObj.exitEditing()
+            }
+        }
+
+        const isLockedNow = !targetObj.selectable
+        if (isLockedNow) {
+            targetObj.selectable = true
+            targetObj.hoverCursor = null
+            this._toggelLockBtn(clickedLockBtn, true)
+        } else {
+            targetObj.selectable = false
+            targetObj.hoverCursor = 'default'
+            this._toggelLockBtn(clickedLockBtn, false)
+        }
+    }
+
+    _toggelLockBtn(btn, value) {
+        const clickedLockBtn = btn
+        if (!clickedLockBtn) {
+            console.error('failed to toggle lock button')
+            return
+        }
+        const isBool = typeof value === 'boolean'
+        if (!isBool) {
+            console.error('wft')
+            return
+        }
+        const btnIco = btn.children[0]
+        if (value) {
+            btnIco.classList.remove('bi-lock-fill')
+            btnIco.classList.add('bi-unlock2-fill')
+            clickedLockBtn.classList.remove('btn-primary')
+            clickedLockBtn.classList.add('btn-outline-primary')
+        } else {
+            btnIco.classList.remove('bi-unlock2-fill')
+            btnIco.classList.add('bi-lock-fill')
+            clickedLockBtn.classList.remove('btn-outline-primary')
+            clickedLockBtn.classList.add('btn-primary')
+        }
     }
 
     _editObjectId(e) {
@@ -310,5 +374,33 @@ export class ObjectsOreder {
         const temp = elementTwo.id
         elementTwo.id = elementOne.id
         elementOne.id = temp
+
+        const fstLock = document.getElementById(`lock-${elementOne.id}`)
+        if (!fstLock) {
+            console.error('failed to swap lock buttons')
+            return
+        }
+        const secLock = document.getElementById(`lock-${elementTwo.id}`)
+        if (!secLock) {
+            console.error('failed to swap lock buttons')
+            return
+        }
+
+        const tempLockId = fstLock.id
+        fstLock.id = secLock.id
+        secLock.id = tempLockId
+
+        const tempHtml = fstLock.innerHTML
+        fstLock.innerHTML = secLock.innerHTML
+        secLock.innerHTML = tempHtml
+
+        const fstClasses = [...fstLock.classList]
+        const secClasses = [...secLock.classList]
+
+        fstLock.className = ''
+        fstLock.classList.add(...secClasses)
+
+        secLock.className = ''
+        secLock.classList.add(...fstClasses)
     }
 }

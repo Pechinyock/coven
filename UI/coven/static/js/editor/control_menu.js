@@ -120,7 +120,7 @@ export class ControlMenu {
             height: cropHeight
         })
         const base64Data = dataAsURL.split(',')[1]
-        const canvasData = this.canvas.toJSON(['id'])
+        const canvasData = this.canvas.toJSON(['id', 'selectable', 'hoverCursor'])
         canvasData.objects = canvasData.objects.filter(obj =>
             !(obj.id && obj.id.startsWith('unsave_'))
         )

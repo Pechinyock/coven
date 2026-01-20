@@ -17,13 +17,12 @@ class Editor {
         this._initTextEdit()
         this._initCanvasEvents()
         this._initKeyEvents()
-        this._initObjectOrdering()
         this._initControlMenu()
         this._initGeometry()
         this._initPositioning()
         this._initImgPool()
+        this._initObjectOrdering()
         setTimeout(() => { this._initUtilPanel() }, 100)
-
 
         const urlParams = new URLSearchParams(window.location.search)
         if (!urlParams || urlParams.size === 0) {
@@ -45,6 +44,9 @@ class Editor {
             await this._loadCard(edtCardType, edtCardName)
             this._setCardTypeSelected(edtCardType)
             this._setCardName(edtCardName)
+            this.setBgCheckerboard(50)
+            this.canvas.contextCache = {}
+            this.canvas.renderAll()
         })
     }
 
@@ -81,12 +83,12 @@ class Editor {
 
     async _loadCard(type, name) {
         try {
+            await document.fonts.ready
             const response = await fetch(`/card?cardType=${type}&cardName=${name}`)
             const editingData = await response.json()
             this.canvas.loadFromJSON(editingData, () => {
-                this.setBgCheckerboard(50)
-                this.canvas.renderAll();
             }, (jsonObj, fabricObj) => {
+                fabricObj.dirty = true
                 if (jsonObj.id) {
                     fabricObj.set('id', jsonObj.id)
                 }
@@ -190,7 +192,6 @@ class Editor {
         this.canvas.on('object:added', (e) => {
             const newElementId = `${e.target.type}_${this.elementsIncrementer++}`
             const currentId = e.target.get('id')
-            if (!e.target.selectable) { return }
             if (!currentId) {
                 e.target.set('id', newElementId)
             }
@@ -232,3 +233,4 @@ class Editor {
 
 const editor = new Editor('card-canvas')
 window.editor = editor
+setTimeout(() => {editor.setBgCheckerboard(50)}, 1000)
