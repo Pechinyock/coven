@@ -70,7 +70,6 @@ class Editor {
             source: patternCanvas,
             repeat: 'repeat'
         })
-
         this.canvas.backgroundColor = pattern
         this.canvas.renderAll()
     }
@@ -167,6 +166,8 @@ class Editor {
         const utilPanel = new UtilsPanel(this.canvas)
         utilPanel.bindCardEdges(cardEdgesToggle)
         utilPanel.initCardEdges()
+        utilPanel.bindGroup(groupObjectsToggle)
+        utilPanel.bindSavePartial(openPartialModal, savePartial)
         this.utilPanel = utilPanel
     }
 
@@ -233,4 +234,4 @@ class Editor {
 
 const editor = new Editor('card-canvas')
 window.editor = editor
-setTimeout(() => {editor.setBgCheckerboard(50)}, 1000)
+setTimeout(() => { editor.setBgCheckerboard(50) }, 1000)

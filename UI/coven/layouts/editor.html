@@ -37,9 +37,15 @@
         </section>
         <hr>
         <section class="row">
-            <div class="col-1">
+            <div class="col-12">
                 <button class="btn btn-primary" id="cardEdgesToggle"><i
                         class="bi bi-square"></i></button>
+                <button class="btn btn-outline-primary"
+                    id="groupObjectsToggle"><i class="bi bi-collection"
+                        disabled></i></button>
+                <button class="btn btn-primary" data-bs-toggle="modal"
+                    id="openPartialModal" data-bs-target="#savePartialModal"
+                    disabled><i class="bi bi-save2"></i></button>
             </div>
         </section>
         <section class="row">
@@ -445,7 +451,7 @@
         <input type="hidden" name="jsonData" id="jsonData" />
         <input type="hidden" name="pngData" id="pngData" />
     </form>
-
+    <!-- save result modal -->
     <div class="modal fade modal-lg" id="modal" data-bs-backdrop="static"
         tabindex="-1" aria-hidden="false">
         <div class="modal-dialog">
@@ -478,6 +484,43 @@
                         <div id="save-response" class="col-12 mt-2">
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- save partial modal -->
+    <div class="modal fade modal-lg" id="savePartialModal"
+        data-bs-backdrop="static" tabindex="-1" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"></h1>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <div class="text-sm-left" style="color: red">Если
+                        отображается как говно это вероятнее всего из за
+                        поворота. Поставь поворот в 0</div>
+                    <section class="container-fluid">
+                        <div
+                            class="row justify-content-center align-items-center">
+                            <canvas id="partialPreview"
+                                class="col-auto"></canvas>
+                        </div>
+                        <div class="row mt-1">
+                            <form>
+                                <label for="partialName">Название:</label>
+                                <input type="text" class="form-control"
+                                    name="partialName" id="partialName">
+                                <div class="row mt-1">
+                                    <button class="btn btn-primary"
+                                        id="savePartial"
+                                        type="submit">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
