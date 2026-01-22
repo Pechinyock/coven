@@ -137,14 +137,31 @@ export class UtilsPanel {
             }
             this._copySelectedToPartial(obj)
         })
-
         savePartialBtn.addEventListener('click', () => {
+            const pngData = this._getPngData()
+
+            this._savePartial(this._partialJson, pngData, false)
         })
 
         savePartialBtn.disabled = true
         this.previewCanvas = new fabric.Canvas(partialPreview)
         this.openSavePartialBtn = openSavePartialBtn
         this.savePartialBtn = savePartialBtn
+    }
+
+    overridePartial() {
+        const pngData = this._getPngData()
+        this._savePartial(this._partialJson, pngData, true)
+    }
+
+    _getPngData() {
+        const prev = this.previewCanvas.get('backgroundColor')
+
+        this.previewCanvas.set({ backgroundColor: 'transparent' })
+        const canvasData = this.previewCanvas.toDataURL({ format: 'png' })
+        const base64Data = canvasData.split(',')[1]
+        this.previewCanvas.set({ backgroundColor: prev })
+        return base64Data
     }
 
     _copySelectedToPartial(selected) {
@@ -158,6 +175,7 @@ export class UtilsPanel {
         this.canvas.discardActiveObject();
         this.canvas.renderAll();
 
+        let jsonData
         if (selected.type === 'activeSelection') {
             const selectedObjs = selected.getObjects()
             if (!selectedObjs || selectedObjs.length === 0) {
@@ -165,26 +183,67 @@ export class UtilsPanel {
             }
             const selectedLeft = selected.left
             const selectedTop = selected.top
-            selectedObjs.forEach(obj => {
+            const toSave = selectedObjs.map(obj => {
                 const clone = fabric.util.object.clone(obj)
                 clone.left = clone.left - selectedLeft
                 clone.top = clone.top - selectedTop
                 clone.selectable = false
                 clone.hoverCursor = 'default'
                 partialCanvas.add(clone)
+                return clone
             })
+            jsonData = new fabric.Group(toSave).toJSON()
         } else {
             const clone = fabric.util.object.clone(selected)
-            clone.left = 0
-            clone.top = 0
+            if (clone.type.includes('text')) {
+                partialCanvas.setWidth(selectedBounds.width + 20)
+                partialCanvas.setHeight(selectedBounds.height + 20)
+                clone.left = 20
+                clone.top = 20
+            } else {
+                clone.left = 0
+                clone.top = 0
+            }
             clone.selectable = false
             clone.angle = 0
             clone.hoverCursor = 'default'
             partialCanvas.add(clone)
+            jsonData = clone.toJSON()
         }
+
+        this._partialJson = jsonData
 
         partialCanvas.renderAll()
         this.savePartialBtn.disabled = false
+    }
+
+    _savePartial(jsonData, pngData, override = false) {
+        if (!jsonData || !pngData) {
+            console.error('failed to move data to form')
+            return
+        }
+        const name = partialName.value
+
+        const data = {
+            name: name,
+            jsonData: jsonData,
+            pngData: pngData
+        }
+
+        const method = override ? "PATCH" : "POST"
+
+        htmx.ajax(method, '/partial', {
+            values: data,
+            target: '#savePartialResponse',
+            swap: 'innerHTML'
+        })
+
+        setTimeout(() => {
+            htmx.ajax('GET', '/ui/partials', {
+                target: '#parials-loader',
+                swap: 'innerHTML'
+            })
+        }, 2000)
     }
 
     _setChecker(cellSize, canvas) {

@@ -86,7 +86,7 @@ func cardHandleFunc(w http.ResponseWriter, r *http.Request) {
 			}
 			if isExists {
 				webui.SendFailed(w, fmt.Sprintf("карта с названием %q уже существует", name))
-				webui.UIBundle.Render("override_card", w, nil)
+				webui.UIBundle.Render("override_card", w, "editor.controlMenu.overrideCard()")
 				w.WriteHeader(http.StatusConflict)
 				return
 			}

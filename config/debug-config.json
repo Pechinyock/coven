@@ -63,6 +63,11 @@
             "routeName": "cards-json-data",
             "dirPath": "C:/_dev/coven-data/cards_json_data",
             "tokenSource": "none"
+        },
+        "partialsDataDir":{
+            "routeName": "partials-data",
+            "dirPath": "C:/_dev/coven-data/partials_data",
+            "tokenSource": "none"
         }
     },
     "remoteStorageSettings": {

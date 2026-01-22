@@ -1,0 +1,12 @@
+<div class="col" id="partials">
+    <div class="row row-cols-4 g-2 overflow-auto" style="max-height: 300px;">
+        {{range .Images}}
+        <div class="col">
+            <img src="/{{$.BasePath}}/{{$.FileGroup}}/{{.FileName}}.png"
+                class="img-fluid rounded w-100 h-100 object-fit-contain"
+                data-file-name="{{.FileName}}"
+                onclick="editor.partials.onPartialSelected(this)">
+        </div>
+        {{end}}
+    </div>
+</div>
