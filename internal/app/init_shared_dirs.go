@@ -24,6 +24,7 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 			CardTemplatesDir: defaultTemplatesDir(),
 			ImagePoolDir:     defaultImagePoolDir(),
 			CardsJsonDataDir: defaultJsonDataDir(),
+			Partials:         defaultPartialsDataDir(),
 		}
 	}
 
@@ -51,12 +52,17 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 		conf.CardsJsonDataDir = defaultJsonDataDir()
 		printWarn("cards json data", conf.CardsJsonDataDir.DirPath)
 	}
+	if conf.Partials == nil {
+		conf.Partials = defaultPartialsDataDir()
+		printWarn("cards partials", conf.Partials.DirPath)
+	}
 	covenDirs := map[string]*config.ShareDirConfig{
 		"image_pool":      conf.ImagePoolDir,
 		"cards_json_data": conf.CardsJsonDataDir,
 		"cards_templates": conf.CardTemplatesDir,
 		"complete_cards":  conf.CompleteCardsDir,
 		"card_styles":     conf.CardStylesDir,
+		"partials":        conf.Partials,
 	}
 
 	handlerSetter := func(routeName, path, source string) http.Handler {
@@ -129,6 +135,12 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 	}
 	shareddirs.CardStylesDirPath = cardStyles
 
+	partials := shareddirs.SharedDirPaths{
+		Path: conf.Partials.DirPath,
+		Uri:  conf.Partials.RouteName,
+	}
+	shareddirs.PartialsDirPath = partials
+
 	createSubDirs := func(base string, names []string) error {
 		for _, e := range names {
 			fullPath := filepath.Join(base, e)
@@ -198,11 +210,17 @@ func registerSharedDirs(router *http.ServeMux, conf *config.FileServerConfig) er
 		return err
 	}
 
+	err = utils.CreateDirIfNotExists(partials.Path)
+	if err != nil {
+		return err
+	}
+
 	logSetup("complete cards", complete)
 	logSetup("cards json data", jsonData)
 	logSetup("card templates", templates)
 	logSetup("image pool", imgPool)
 	logSetup("card styles", cardStyles)
+	logSetup("partials", partials)
 
 	return nil
 }
@@ -235,6 +253,14 @@ func defaultJsonDataDir() *config.ShareDirConfig {
 	return &config.ShareDirConfig{
 		RouteName:   "cards-json-data",
 		DirPath:     "./cards_json_data",
+		TokenSource: "none",
+	}
+}
+
+func defaultPartialsDataDir() *config.ShareDirConfig {
+	return &config.ShareDirConfig{
+		RouteName:   "partials-data",
+		DirPath:     "./partials_data",
 		TokenSource: "none",
 	}
 }

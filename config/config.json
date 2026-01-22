@@ -55,6 +55,11 @@
             "routeName": "cards-json-data",
             "dirPath": "./data/cards_json_data",
             "tokenSource": "none"
+        },
+        "partialsDataDir":{
+            "routeName": "partials-data",
+            "dirPath": "./data/partials_data",
+            "tokenSource": "none"
         }
     },
     "remoteStorageSettings": {

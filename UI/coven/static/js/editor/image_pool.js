@@ -65,16 +65,20 @@ export class ImagePool {
             addFromLocal.disabled = false
         }
         const selectedBorderStyle = '2px solid rgb(3, 252, 78)'
+
         if (!this.selectedLocalImage) {
             img.style.border = selectedBorderStyle
             this.selectedLocalImage = img
             return
-        } else {
-            img.style.border = selectedBorderStyle
-            this.selectedLocalImage.style.border = '2px solid transparent'
-            this.selectedLocalImage = img
         }
-
+        const currentFileName = img.dataset.fileName
+        const selectedFileName = this.selectedLocalImage.dataset.fileName
+        if (currentFileName === selectedFileName) {
+            return
+        }
+        img.style.border = selectedBorderStyle
+        this.selectedLocalImage.style.border = '2px solid transparent'
+        this.selectedLocalImage = img
     }
 
     _getImgSrc(img) {

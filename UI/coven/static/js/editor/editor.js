@@ -6,6 +6,7 @@ import { IsEditingRange } from "./utils.js";
 import { Positioning } from "./positioning.js";
 import { ImagePool } from "./image_pool.js";
 import { UtilsPanel } from "./utils_panel.js";
+import { Parials } from "./partials.js";
 
 class Editor {
     constructor(canvasId) {
@@ -22,6 +23,7 @@ class Editor {
         this._initPositioning()
         this._initImgPool()
         this._initObjectOrdering()
+        this._initPartials()
         setTimeout(() => { this._initUtilPanel() }, 100)
 
         const urlParams = new URLSearchParams(window.location.search)
@@ -70,7 +72,6 @@ class Editor {
             source: patternCanvas,
             repeat: 'repeat'
         })
-
         this.canvas.backgroundColor = pattern
         this.canvas.renderAll()
     }
@@ -167,7 +168,15 @@ class Editor {
         const utilPanel = new UtilsPanel(this.canvas)
         utilPanel.bindCardEdges(cardEdgesToggle)
         utilPanel.initCardEdges()
+        utilPanel.bindGroup(groupObjectsToggle)
+        utilPanel.bindSavePartial(openPartialModal, savePartialBtn)
         this.utilPanel = utilPanel
+    }
+
+    _initPartials() {
+        const partials = new Parials(this.canvas)
+        partials.bindAddPartial(addPartialBtn)
+        this.partials = partials
     }
 
     _initPositioning() {
@@ -233,4 +242,4 @@ class Editor {
 
 const editor = new Editor('card-canvas')
 window.editor = editor
-setTimeout(() => {editor.setBgCheckerboard(50)}, 1000)
+setTimeout(() => { editor.setBgCheckerboard(50) }, 1000)
