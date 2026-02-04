@@ -71,7 +71,7 @@
         }
     },
     "remoteStorageSettings": {
-        "repoStorageAddress": "https://github.com/Pechinyock/coven-data.git",
+        "repoStorageAddress": "https://gitlab.com/pechinyock/coven-data.git",
         "localDirPath": "C:/_dev/coven-data"
     }
 }
