@@ -18,6 +18,7 @@ var CardTypes = map[string]string{
 	"curses":      "Проклятье",
 	"ingredients": "Ингредиент",
 	"potions":     "Зелье",
+	"runes":       "Руны",
 }
 
 func IsCardExists(cardType, cardName string) (bool, error) {
