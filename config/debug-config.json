@@ -63,10 +63,15 @@
             "routeName": "cards-json-data",
             "dirPath": "C:/_dev/coven-data/cards_json_data",
             "tokenSource": "none"
+        },
+        "partialsDataDir":{
+            "routeName": "partials-data",
+            "dirPath": "C:/_dev/coven-data/partials_data",
+            "tokenSource": "none"
         }
     },
     "remoteStorageSettings": {
-        "repoStorageAddress": "https://github.com/Pechinyock/coven-data.git",
+        "repoStorageAddress": "https://gitlab.com/pechinyock/coven-data.git",
         "localDirPath": "C:/_dev/coven-data"
     }
 }

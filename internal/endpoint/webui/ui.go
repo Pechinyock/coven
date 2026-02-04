@@ -98,6 +98,47 @@ func GetUIEndpoints() []endpoint.Endpoint {
 			},
 		},
 		{
+			Path:    "/ui/partials",
+			Methods: []string{http.MethodGet},
+			Secure:  true,
+			HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
+				previews, err := loadPartialsPreview()
+				if err != nil {
+					slog.Error("failed to load partials preview", "error message:", err.Error())
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				if len(previews) == 0 {
+					SendFailed(w, "Еще нет ни одного 'куска'")
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
+				previewData, err := loadPartialsPreview()
+				if err != nil {
+					slog.Error("failed to load partial data", "error message", err.Error())
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				if previewData == nil {
+					slog.Info("there's no partials yet")
+					w.Write([]byte("<p>Кусков ещё нет</p>"))
+					return
+				}
+				baseUri := shareddirs.PartialsDirPath.Uri
+				partialsViewData := projection.ImageViewProj{
+					BasePath:  baseUri,
+					FileGroup: "preview",
+					Images:    previewData,
+				}
+				err = UIBundle.Render("partials_view", w, partialsViewData)
+				if err != nil {
+					SendFailed(w, fmt.Sprintf("failed to load partial view %s", err.Error()))
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			},
+		},
+		{
 			Path:    path.Join(UIPrefix, "image-pool", "{poolName}"),
 			Methods: []string{"GET"},
 			Secure:  true,

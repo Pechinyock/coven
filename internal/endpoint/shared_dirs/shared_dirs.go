@@ -10,3 +10,4 @@ var CompleteCardsDirPath SharedDirPaths
 var CardsJsonDataDirPath SharedDirPaths
 var CardTemplatesDirPath SharedDirPaths
 var CardStylesDirPath SharedDirPaths
+var PartialsDirPath SharedDirPaths

@@ -16,7 +16,7 @@ export class ImagePool {
             }
             const imgHtmlElement = this.selectedLocalImage
             if (!imgHtmlElement) {
-                console.error('trying add nothing')
+                button.disabled = true
                 return
             }
             const imgUri = this._getImgSrc(imgHtmlElement)
@@ -27,7 +27,6 @@ export class ImagePool {
                 this.canvas.renderAll()
             })
         })
-        button.disabled = false
     }
 
     onNewImageUploaded() {
@@ -55,21 +54,31 @@ export class ImagePool {
             target: '#images',
             swap: 'innerHTML'
         })
+        this.selectedLocalImage = null
+        if (addFromLocal) {
+            addFromLocal.disabled = true
+        }
     }
 
     onImageClicked(img) {
+        if (addFromLocal) {
+            addFromLocal.disabled = false
+        }
         const selectedBorderStyle = '2px solid rgb(3, 252, 78)'
+
         if (!this.selectedLocalImage) {
             img.style.border = selectedBorderStyle
             this.selectedLocalImage = img
             return
         }
-        if (this.selectedLocalImage.src === img.src) { return }
-        else {
-            img.style.border = selectedBorderStyle
-            this.selectedLocalImage.style.border = '2px solid transparent'
-            this.selectedLocalImage = img
+        const currentFileName = img.dataset.fileName
+        const selectedFileName = this.selectedLocalImage.dataset.fileName
+        if (currentFileName === selectedFileName) {
+            return
         }
+        img.style.border = selectedBorderStyle
+        this.selectedLocalImage.style.border = '2px solid transparent'
+        this.selectedLocalImage = img
     }
 
     _getImgSrc(img) {

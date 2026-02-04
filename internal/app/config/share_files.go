@@ -15,6 +15,7 @@ type FileServerConfig struct {
 	CardTemplatesDir *ShareDirConfig  `json:"cardTemplatesDir"`
 	ImagePoolDir     *ShareDirConfig  `json:"imagePoolDir"`
 	CardsJsonDataDir *ShareDirConfig  `json:"cardsJsonDataDir"`
+	Partials         *ShareDirConfig  `json:"partialsDataDir"`
 }
 
 func (f *FileServerConfig) Validate() error {

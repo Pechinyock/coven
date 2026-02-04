@@ -2,6 +2,7 @@ package form
 
 import (
 	"coven/internal/endpoint"
+	"net/http"
 	"path"
 )
 
@@ -26,6 +27,12 @@ func GetFormEndpoints() []endpoint.Endpoint {
 			Methods:     []string{"POST"},
 			Secure:      true,
 			HandlerFunc: pushChanges,
+		},
+		{
+			Path:        "/partial",
+			Methods:     []string{http.MethodPost, http.MethodGet, http.MethodDelete, http.MethodPatch},
+			Secure:      true,
+			HandlerFunc: HandlePartial,
 		},
 	}
 }

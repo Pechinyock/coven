@@ -15,11 +15,13 @@
     <script src="assets/js/lib/fabric.js" defer></script>
     <script src="assets/js/modal.js" defer></script>
     <script type="module" src="assets/js/editor/utils.js" defer></script>
+    <script type="module" src="assets/js/editor/utils_panel.js" defer></script>
     <script type="module" src="assets/js/editor/editor.js" defer></script>
     <script type="module" src="assets/js/editor/text_edit.js" defer></script>
     <script type="module" src="assets/js/editor/color.js" defer></script>
     <script type="module" src="assets/js/editor/objects_ordering.js"
         defer></script>
+    <script type="module" src="assets/js/editor/partials.js" defer></script>
     <script type="module" src="assets/js/editor/control_menu.js" defer></script>
     <script type="module" src="assets/js/editor/geometry.js" defer></script>
     <script type="module" src="assets/js/editor/positioning.js" defer></script>
@@ -34,8 +36,18 @@
                     data-bs-target="#modal">Сохранить</button>
             </div>
         </section>
+        <hr>
         <section class="row">
-            <div class="col-4">
+            <div class="col-12">
+                <button class="btn btn-primary" id="cardEdgesToggle"><i
+                        class="bi bi-square"></i></button>
+                <button class="btn btn-outline-primary"
+                    id="groupObjectsToggle"><i class="bi bi-collection"
+                        disabled></i></button>
+            </div>
+        </section>
+        <section class="row">
+            <div class="col-3">
                 <div class="accordion accordion-flush mt-4">
                     <div class="accordion-header">
                         <button class="accordion-button" type="button"
@@ -150,6 +162,44 @@
                                 hx-swap="innerHTML">
                             </div>
                             <div class="row mt-3" id="images"></div>
+                        </div>
+                    </div>
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-partials">
+                            Куски
+                        </button>
+                    </div>
+                    <div id="collapse-partials"
+                        class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div hx-get="/ui/partials"
+                                hx-trigger="load, partialsUpdated"
+                                hx-target="#parials-loader" hx-swap="innerHTML">
+                            </div>
+                            <div class="row">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <button class="btn btn-primary"
+                                            id="addPartialBtn"
+                                            disabled>Добавить</button>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button class="btn btn-primary"
+                                            data-bs-toggle="modal"
+                                            id="openPartialModal"
+                                            data-bs-target="#savePartialModal"
+                                            disabled><i
+                                                class="bi bi-save2"></i></button>
+                                    </div>
+                                </div>
+                                <div class="row mt-1">
+                                    <div class="col-auto" id="parials-loader">
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                     <div class="accordion-header">
@@ -422,8 +472,8 @@
                 <div class="row">
                     Объекты
                 </div>
-                <div class="row flex-nowrap overflow-hidden">
-                    <div id="objects-ordering" class="objects-view">
+                <div class="row flex-nowrap overflow-auto">
+                    <div id="objects-ordering" class="objects-view text-nowrap">
                     </div>
                 </div>
             </div>
@@ -437,7 +487,7 @@
         <input type="hidden" name="jsonData" id="jsonData" />
         <input type="hidden" name="pngData" id="pngData" />
     </form>
-
+    <!-- save result modal -->
     <div class="modal fade modal-lg" id="modal" data-bs-backdrop="static"
         tabindex="-1" aria-hidden="false">
         <div class="modal-dialog">
@@ -470,6 +520,45 @@
                         <div id="save-response" class="col-12 mt-2">
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- save partial modal -->
+    <div class="modal fade modal-lg" id="savePartialModal"
+        data-bs-backdrop="static" tabindex="-1" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"></h1>
+                    <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <div class="text-sm-left" style="color: red">Плохо работает
+                        если объект перевернут</div>
+                    <section class="container-fluid">
+                        <div
+                            class="row justify-content-center align-items-center">
+                            <canvas id="partialPreview"
+                                class="col-auto"></canvas>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="row mt-1">
+                                <label for="partialName">Название:</label>
+                                <input type="text" class="form-control"
+                                    name="partialName" id="partialName"
+                                    required>
+                            </div>
+                            <div class="row mt-1 mb-1">
+                                <button class="btn btn-primary"
+                                    id="savePartialBtn">Сохранить </button>
+                            </div>
+                            <div class="row">
+                                <div id="savePartialResponse"></div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
